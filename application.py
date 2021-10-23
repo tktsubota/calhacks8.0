@@ -18,12 +18,17 @@ from werkzeug.exceptions import default_exceptions, HTTPException, InternalServe
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.datastructures import ImmutableMultiDict
 
+import smtplib
+from string import Template
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 import requests
 import urllib.parse
 
 from functools import wraps
 
-from helpers import apology, usd
+from helpers import apology, usd, gen_random_string, gen_random_token, sendEmail
 
 from cs50 import SQL
 
@@ -47,10 +52,12 @@ app_version = os.environ.get('APP_VERSION')
 def is_logged_in() :
     return flask_login.current_user.is_authenticated
 
-@app.route("/logmeout")
-def logmeout() :
-    flask_login.logout_user()
-    return redirect("/")
+def getUserId() :
+
+    if not is_logged_in() :
+        return None
+    return flask_login.current_user.id
+
 
 @app.before_request
 def before_request():
@@ -84,13 +91,13 @@ app.config["SESSION_REFRESH_EACH_REQUEST"] = False
 
 app.secret_key = os.environ.get("FN_FLASK_SECRET_KEY", default=False)
 
-# db = SQL("")
-
 # " , logged_in = is_logged_in() "
 
 Compress(app)
 Gzip(app)
 Session(app)
+
+# db = SQL("cockroachdb://adam:INszvx_c7RoH_dGI@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/slim-goat-4296.calhacks?sslmode=verify-full&sslrootcert=/Users/adam.manji/Library/CockroachCloud/certs/slim-goat-ca.crt")
 
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
@@ -114,8 +121,78 @@ def index():
 
 @app.route("/logout")
 def logout() :
+    flask_login.logout_user()
+    return redirect("/")
+
+
+@app.route('/login', methods=["GET", "POST"])
+def login() :
+
+    if is_logged_in() :
+        return redirect('/lessons')
+
+    if request.method == 'POST' :
+
+        email = request.form['email']
+        password = request.form['password']
+
+        if not db.execute("SELECT COUNT(1) FROM users WHERE email=:e", e=email) :
+            return render_template('login.html')
+
+        info = db.execute("SELECT uid, password FROM users WHERE email=:e", e=request.form['email'])
+        if not check_password_hash(info['password'], password) :
+            return render_template('login.html')
+        
+        this_user = User()
+        this_user.id = info['uid']
+        flask_login.login_user(this_user, remember=True)
+
+        return redirect('/lessons')
     
+    return render_template('login.html')
+
+
+@app.route('/lessons')
+def lessons() :
+
     pass
+
+
+@app.route('/simulator')
+def simulator() :
+
+    pass
+
+
+@app.route('/register', methods=["GET", "POST"])
+def register() :
+
+    if is_logged_in() :
+        return redirect('/lessons')
+
+    if request.method == 'POST' :
+        # confirm submission form
+        email = request.form['email']
+        password = request.form['password']
+
+        # email verification token
+        etoken = gen_random_token(6)
+
+        # add user to db
+        uid = gen_random_string(6)
+        passhash = generate_password_hash(password)
+        db.execute("INSERT INTO users (uid) VALUES (:u)", u=uid) # ADD OTHER VARIABLES TO THIS
+
+        # send email to user w/ token
+        tokenstring = 'Your verification token is: ' + etoken
+        sendEmail(email, tokenstring, 'CalHacksApp Email Verification Token')
+
+        # keep user cached w/ flask-login
+        this_user = User()
+        this_user.id = db.execute("SELECT uid FROM users WHERE email=:e", e=email)
+        flask_login.login_user(this_user, remember=True)
+    
+    return render_template('register.html')
 
 
 @app.route('/profile', methods=["GET", "POST"])
@@ -134,7 +211,6 @@ def search() :
         pass
 
     return 'put a search page here bro'
-
 
 
 
