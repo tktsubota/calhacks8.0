@@ -1,6 +1,13 @@
 import os
 import requests
 import urllib.parse
+import string
+import random
+
+import smtplib
+from string import Template
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 from flask import redirect, render_template, request, session, url_for
 from functools import wraps
@@ -35,3 +42,41 @@ def login_required(f):
 def usd(value):
     """Format value as USD."""
     return f"${value:,.2f}"
+
+
+def gen_random_string(l) :
+
+    characters = string.ascii_letters + '1234567890'
+    return ''.join(random.choice(characters) for _ in range(l))
+
+def gen_random_token(l) :
+
+    characters = '1234567890'
+    return ''.join(random.choice(characters) for _ in range(l))
+
+
+def sendEmail(address, message, subject) :
+
+    from_addr = 'thebestcalhack@gmail.com'
+    pw = 'duolingo'
+
+    s = smtplib.SMTP(host='smtp.gmail.com', port=587)
+    s.starttls()
+    s.login(from_addr, pw)
+
+    msg = MIMEMultipart() # create a message
+
+    # setup the parameters of the message
+    msg['From']=from_addr
+    msg['To']=address
+    msg['Subject']=subject
+
+    # add in the message body
+    msg.attach(MIMEText(message))
+
+    # send the message via the server set up earlier.
+    s.send_message(msg)
+
+    del msg
+
+    s.quit()
