@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- documentation at http://getbootstrap.com/docs/4.3/, alternative themes at https://bootswatch.com/ -->
+        <link href="static/bootstrap.min.css" rel="stylesheet" type="text/css">
+
+        <!--
+        <link href="static/icon_white.ico" rel="icon" type="image/x-icon" />
+        <link href="static/icon_white.ico" rel="shortcut icon" type="image/x-icon" />
+        -->
+
+        <script src="static/jquery-3.6.0.min.js"></script>
+        <script src="static/bootstrap.min.js"></script>
+
+        <script src="/static/65af857f3b.js" crossorigin="anonymous"></script>
+
+        <script src="/static/button-functions.js"></script>
+        <script src="/static/script.js"></script>
+
+        <link href="/static/styles.css" rel="stylesheet" type="text/css">
+        <!----<link href="/static/dark.css" rel="stylesheet"><!---->
+
+        <!--<script data-ad-client="ca-pub-1163364914603677" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
+
+        <title>Our CalHack: {% block title %}{% endblock %}</title>
+
+        {% block head %}{% endblock %}
+
+    </head>
+
+    <body>
+
+        {% set ending = url_for(request.endpoint) %}
+
+
+        <main class="container-fluid p-5" style='margin-bottom: -63px'>
+            {% block main %}{% endblock %}
+        </main>
+
+
+        {% if get_flashed_messages() %}
+            <header>
+                <div class="alert alert-primary border text-center" role="alert">
+                    {{ get_flashed_messages() | join(" ") }}
+                </div>
+            </header>
+        {% endif %}
+
+
+        {% block script %}{% endblock %}
+
+    </body>
+
+</html>
