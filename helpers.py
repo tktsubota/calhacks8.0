@@ -9,6 +9,8 @@ from string import Template
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+import pyEX as p
+
 from flask import redirect, render_template, request, session, url_for
 from functools import wraps
 
@@ -80,3 +82,24 @@ def sendEmail(address, message, subject) :
     del msg
 
     s.quit()
+
+
+def lookup(symbol):
+    """Look up quote for symbol."""
+
+    # Contact API
+    try:
+        client = p.Client(api_token='pk_54e28984093d4115931ec8b87b421ae2', version='stable')
+    except requests.RequestException:
+        return None
+
+    # Parse response
+    try:
+        quote = client.quote(symbol)
+        return {
+            "name": quote["companyName"],
+            "price": float(quote["latestPrice"]),
+            "symbol": quote["symbol"]
+        }
+    except (KeyError, TypeError, ValueError):
+        return None
