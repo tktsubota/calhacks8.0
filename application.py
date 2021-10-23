@@ -99,7 +99,7 @@ Compress(app)
 Gzip(app)
 Session(app)
 
-db = SQL("cockroachdb://adam:INszvx_c7RoH_dGI@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/slim-goat-4296.calhacks?sslmode=verify-full&sslrootcert=/Users/adam.manji/Library/CockroachCloud/certs/slim-goat-ca.crt")
+# db = SQL("cockroachdb://adam:INszvx_c7RoH_dGI@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/slim-goat-4296.calhacks?sslmode=verify-full&sslrootcert=/Users/adam.manji/Library/CockroachCloud/certs/slim-goat-ca.crt")
 
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
@@ -137,18 +137,16 @@ def login() :
 
 @app.route('/lessons')
 def lessons() :
-
-    pass
+    return render_template('lessons.html')
 
 
 @app.route('/simulator')
 def simulator() :
-
-    pass
+    return render_template('simulator.html')
 
 
 @app.route('/register', methods=["GET", "POST"])
-def login() :
+def register() :
 
     if is_logged_in() :
         return redirect('/')
