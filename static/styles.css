@@ -1,0 +1,16 @@
+.dark-bg {
+    background-color: #9effc9;
+}
+
+.light-bg {
+    background-color: #ddffec;
+}
+
+#landing {
+    height: 80vh;
+}
+
+.large-header {
+    margin: 2em 0 2em 0;
+    font-size: 4em;
+}
