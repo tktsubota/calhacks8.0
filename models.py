@@ -9,7 +9,7 @@ from cs50 import SQL
 from helpers import lookup, gen_random_string
 from datetime import datetime
 
-db = SQL("cockroachdb://adam:INszvx_c7RoH_dGI@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/slim-goat-4296.calhacks?sslmode=verify-full&sslrootcert=/Users/adam.manji/Library/CockroachCloud/certs/slim-goat-ca.crt")
+db = SQL("cockroachdb://adam:INszvx_c7RoH_dGI@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/slim-goat-4296.calhacks?sslmode=verify-full&sslrootcert=/Users/troy/Library/CockroachCloud/certs/slim-goat-ca.crt")
 
 class Transaction:
     """A buy or sell transaction"""
