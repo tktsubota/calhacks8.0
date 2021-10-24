@@ -70,21 +70,38 @@ activities2.push(new MultipleChoiceActivity(
     "Why would a company want to give a part of their company away?",
     ["Raise money to expand the company", "Raise awareness of their company", "Required by the US Government", "Raise money for charity"],
     1));
-activity2.push(new MultipleChoiceActivity(
+activities2.push(new MultipleChoiceActivity(
     "A company can decide to join a stock exchange to make it easier for individuals to purchase their stock. Some examples are NASDAQ(for tech companies) and NYSE(largest stock exchange).",
     "Which of the following companies is in the NASDAQ stock exchange?",
     ["Adidas","Ford", "Amazon", "Virgin Galactic"]
     2));
-activity2.push(new GraphActivity(
+activities2.push(new GraphActivity(
     "The price of a stock is determined by how much investors are willing to buy and sell the stock based on how valuable they believe the company is.",
     "If a company recently had a 50% increase in total sales over the last month, which direction should its stock price go?",
     1));
-activity2.push(new MultipleChoiceActivity(
+activities2.push(new MultipleChoiceActivity(
     "The graph of a stock price over time is one way of seeing the current value of a stock.",
     "The pandemic had a massive impact on many companies. Look up a graph of Amazon's 3 year stock price. How did Amazon do during the pandemic?",
     ["Become extremely valuable", "Become slightly more valuable", "Become slightly less valuable", "Become worthless"],
     1));
-lessons.push(new Lesson("Introduction to Stocks"));
+lessons.push(new Lesson("Introduction to Stocks", "chart-line",activities2));
+
+//Lesson 3
+activities3 = []
+activities3.push(new MultipleChoiceActivity(
+    "By buying portions of a company, you can earn a part of the profits of the company. The amount of money given for each stock is known as the dividend.",
+    "If the annual dividend of a company is $1 and you own 23 stocks of the company, how much money did you make in dividends?",
+    ["$1","$12","$23","$46"],
+    2));
+lessons.push(new Lesson("Advanced Stock Market Indicators", "chart-mixed",activities3));
+
+//Lesson 4-
+lessons.push(new Lesson("Mutual Funds", "chart-pie",[]));
+lessons.push(new Lesson("Introduction to Cryptocurrency", "btc",[]));
+lessons.push(new Lesson("Middle of Cryptocurrency", "ethereum",[]));
+lessons.push(new Lesson("Final Cryptocurrency", "litecoin-sign",[]));
+lessons.push(new Lesson("Future Investing", "comment-dollar",[]));
+
 // Hardcoded data end
 
 function htmlForLesson(lesson, index, fractionComplete, active) {
