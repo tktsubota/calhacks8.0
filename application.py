@@ -222,7 +222,7 @@ def lessons() :
     return render_template('lessons.html', progress=get_progress())
 
 
-@app.route('/lesson/<n>')
+@app.route('/lesson-<n>')
 def lesson(n) :
 
     if not is_logged_in() :
@@ -340,7 +340,7 @@ def search() :
         return redirect('/lessons')
 
     if request.method == "POST" :
-        symbol = request.method['symbol']
+        symbol = request.form['symbol']
         client = p.Client(api_token='pk_54e28984093d4115931ec8b87b421ae2', version='stable')
         info = client.quote(symbol)
         return render_template('search.html', progress=get_progress(), info=info)
