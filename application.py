@@ -229,7 +229,7 @@ def sell() :
 
     if request.method == 'POST' :
 
-        # takes symbol, quantity, type
+        # takes symbol, quantity, type*
 
         #try :
 

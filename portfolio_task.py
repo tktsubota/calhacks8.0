@@ -14,10 +14,14 @@ def run() :
         port_vals.append(port_val)
         print(port_val)
         print(port_vals)
-        db.execute("UPDATE users SET portfolio_values=ARRAY[:p] WHERE uid=:u", p=port_vals, u=uid)
-        try :
-            db.execute("COMMIT")
-        except :
-            pass
+        port_val_string = '{'
+        for el in port_vals :
+            port_val_string += str(el) + ','
+        port_val_string = port_val_string[0:len(port_val_string)-1]
+        db.execute("UPDATE users SET portfolio_values=:p WHERE uid=:u", p=port_val_string+'}', u=uid)
+    try :
+        db.execute("COMMIT")
+    except :
+        pass
 
 run()
