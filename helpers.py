@@ -103,3 +103,9 @@ def lookup(symbol):
         }
     except (KeyError, TypeError, ValueError):
         return None
+
+    def cryptoname(symbol):
+        url = 'https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_MONTHLY&symbol='+symbol+'&market=CNY&apikey=9XEDKZ2RWDICFDG6'
+        r = requests.get(url)
+        data = r.json()
+        return data['Meta Data']['3. Digital Currency Name']
