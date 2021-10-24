@@ -203,7 +203,7 @@ def search() :
     elif request.method == "POST" :
         pass
 
-    return 'put a search page here bro'
+    return render_template('search.html')
 
 
 
