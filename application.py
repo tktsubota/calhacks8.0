@@ -140,7 +140,12 @@ def login() :
 @app.route('/lessons')
 def lessons() :
 
-    pass
+    if not is_logged_in() :
+
+        return redirect('/login')
+
+    progress = db.execute("SELECT progress FROM users WHERE uid=:u", u=getUserId())[0]['progress']
+    return render_template('lessons.html', progress=progress)
 
 
 @app.route('/simulator')
