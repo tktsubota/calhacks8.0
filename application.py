@@ -162,6 +162,26 @@ def login() :
     return render_template('login.html')
 
 
+<<<<<<< HEAD
+=======
+@app.route('/lessons')
+def lessons() :
+
+    if not is_logged_in() :
+
+        return redirect('/login')
+
+    progress = db.execute("SELECT progress FROM users WHERE uid=:u", u=getUserId())[0]['progress']
+    return render_template('lessons.html', progress=progress)
+
+
+@app.route('/simulator')
+def simulator() :
+
+    pass
+
+
+>>>>>>> 3c47e26db014071ca1f403525675259a8f67ed7f
 @app.route('/buy', methods=['GET', 'POST'])
 def buy() :
 

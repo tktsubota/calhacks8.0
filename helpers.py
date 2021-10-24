@@ -101,7 +101,7 @@ def lookup(symbol, crypto=False):
         quote = client.quote(symbol)
         if crypto:
             return {
-                "name": crpytoname(symbol),
+                "name": cryptoname(symbol),
                 "price": float(quote["latestPrice"]),
                 "symbol": quote["symbol"]
             }
