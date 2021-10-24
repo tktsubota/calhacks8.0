@@ -31,18 +31,19 @@
         </div>
     </div>
     <hr/>
+    {% if info %}
     <!-- Result -->
     <div class="row">
         <div class="col-6">
             <div class="row">
                 <div class="col-5">
                     <h5>Stock</h5>
-                    <h1 class="large-search-type">VFLKS</h1>
-                    <h6 class="company">Apple Inc.</h6>
+                    <h1 class="large-search-type">{{ info.symbol }}</h1>
+                    <h6 class="company">{{ info.companyName }}</h6>
                 </div>
                 <div class="col-7">
                     <h5>Current Price</h5>
-                    <h1 class="large-search-type">$1,142.80</h1>
+                    <h1 class="large-search-type">{{ info.latestPrice }}</h1>
                 </div>
             </div>
             <div class="row justify-content-center top-margin">
@@ -60,46 +61,50 @@
     </div>
     <div class="row top-margin">
         <!-- Key Data -->
+        {% if info.open %}
         <div class="col-3">
             <div class="top-margin">
                 <h6 class="data-header">Opening Price</h6>
-                <p class="data-item">$100.00</p>
+                <p class="data-item">${{ info.open }}</p>
             </div>
             <div class="top-margin">
                 <h6 class="data-header">Closing Price</h6>
-                <p class="data-item">$150.00</p>
+                <p class="data-item">${{ info.iexClose }}</p>
             </div>
         </div>
         <div class="col-3">
             <div class="top-margin">
                 <h6 class="data-header">Market Cap</h6>
-                <p class="data-item">$100,000,000.00</p>
+                <p class="data-item">${{ info.marketCap }}</p>
             </div>
             <div class="top-margin">
                 <h6 class="data-header">P/E</h6>
-                <p class="data-item">300</p>
+                <p class="data-item">{{ info.peRatio }}</p>
             </div>
         </div>
         <div class="col-3">
             <div class="top-margin">
                 <h6 class="data-header">Day High</h6>
-                <p class="data-item">$100.00</p>
+                <p class="data-item">${{ info.high }}</p>
             </div>
             <div class="top-margin">
                 <h6 class="data-header">Day Low</h6>
-                <p class="data-item">$150.00</p>
+                <p class="data-item">${{ info.low }}</p>
             </div>
         </div>
         <div class="col-3">
             <div class="top-margin">
                 <h6 class="data-header">52W High</h6>
-                <p class="data-item">$100.00</p>
+                <p class="data-item">${{ info.week52High }}</p>
             </div>
             <div class="top-margin">
                 <h6 class="data-header">52W Low</h6>
-                <p class="data-item">$150.00</p>
+                <p class="data-item">${{ info.week52Low }}</p>
             </div>
         </div>
+        {% endif %}
     </div>
+
+    {% endif %}
 </div>
 {% endblock %}
