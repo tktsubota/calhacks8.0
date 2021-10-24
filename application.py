@@ -148,7 +148,7 @@ def simulator() :
 
 
 @app.route('/register', methods=["GET", "POST"])
-def login() :
+def register() :
 
     if is_logged_in() :
         return redirect('/')
