@@ -39,7 +39,7 @@ class Student:
         self.uuid = uid
         self.current_lesson = 0
         self.lesson_progress = 0
-        self.cash = 0
+        self.cash = db.execute('SELECT cash FROM users WHERE uid=:u', u=uid)[0]['cash']
 
     def get_quantity(self, symbol):
         """Returns the quantity of a given SYMBOL of a given TYPE held by the student."""
@@ -87,7 +87,7 @@ class Student:
         else:
             amount_to_sell = self.get_quantity(transaction.symbol)
             if amount_to_sell < transaction.quantity:
-                raise Exception(f'Not enough shares of {transaction.name} to sell.')
+                raise Exception(f'Not enough shares of {transaction.symbol} to sell.')
             
         transaction.student = self
 
@@ -110,26 +110,70 @@ class Student:
 
     def get_user_evaluation(self) :
 
+        self.cash = db.execute('SELECT cash FROM users WHERE uid=:u', u=self.uuid)[0]['cash']
+
         cash = db.execute('SELECT cash FROM users WHERE uid=:u', u=self.uuid)[0]['cash']
-        portfolio_val = Student.evaluate_portfolio(self.get_portfolio())
+        portfolio_val = self.evaluate_portfolio(self.get_portfolio())
         return cash + portfolio_val
 
     def get_portfolio(self) :
+
+        self.cash = db.execute('SELECT cash FROM users WHERE uid=:u', u=self.uuid)[0]['cash']
+
         out = {}
         transactions = db.execute("SELECT * FROM transactions WHERE uid=:u", u=self.uuid)
         for t in transactions :
             val = 0
             if t['symbol'] in out :
-                val = out['symbol']
+                val = out[t['symbol']]
             if t['buy'] :
                 val += t['quantity']
             else :
                 val -= t['quantity']
-            out['symbol'] = val
+            out[t['symbol']] = val
+            if val == 0 :
+                out.pop(t['symbol'])
         return out
 
-    def evaluate_portfolio(portfolio) :
+    def get_portfolio_with_prices(self) :
+
+        self.cash = db.execute('SELECT cash FROM users WHERE uid=:u', u=self.uuid)[0]['cash']
+
+        out = {}
+        transactions = db.execute("SELECT * FROM transactions WHERE uid=:u", u=self.uuid)
+        for t in transactions :
+            val = 0
+            if t['type'] == 2 :
+                t['symbol'] = t['symbol'] + 'USDT'
+            t['symbol'] = t['symbol'] + str(t['type'])
+            if t['symbol'] in out :
+                val = out[t['symbol']]
+            if t['buy'] :
+                val += t['quantity']
+            else :
+                val -= t['quantity']
+            out[t['symbol']] = val
+            if val == 0 :
+                out.pop(t['symbol'])
+        real_out = []
+        for thing in out :
+            quantity = out[thing]
+            type = int(thing[-1])
+            thing = thing[0:len(thing)-1]
+            info = lookup(thing)
+            real_out.append({
+                'name': info['name'],
+                'quantity': quantity,
+                'price': info['price'],
+                'type': type
+            })
+        return real_out
+
+    def evaluate_portfolio(self, portfolio) :
+
+        self.cash = db.execute('SELECT cash FROM users WHERE uid=:u', u=self.uuid)[0]['cash']
+
         value = 0
         for e in portfolio :
             value += portfolio[e] * lookup(e)['price']
-        return value
+        return value + self.cash

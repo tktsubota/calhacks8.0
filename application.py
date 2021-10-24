@@ -127,7 +127,13 @@ def index():
 
 @app.route('/simulator')
 def simulator() :
-    return render_template('simulator.html')
+
+    if not is_logged_in() :
+        return redirect('/login')
+
+    student = Student(getUserId())
+    portfolio = student.get_portfolio_with_prices()
+    return render_template('simulator.html', portfolio=portfolio, cash=student.cash, portfolio_value=student.evaluate_portfolio(student.get_portfolio()))
 
 
 @app.route('/history')
@@ -191,7 +197,10 @@ def buy() :
             symbol = request.form['symbol']
             quantity = request.form['quantity']
             type = int(request.form['type'])
-            info = lookup(symbol)
+            if type == 2 :
+                info = lookup(symbol, crypto=True)
+            else :
+                info = lookup(symbol)
             transaction = Transaction('buy', type, symbol, info['price'], quantity)
             student = Student(getUserId())
             student.perform_transaction(transaction)
