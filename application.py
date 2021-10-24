@@ -91,7 +91,8 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=31)
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_REFRESH_EACH_REQUEST"] = False
 
-app.secret_key = os.environ.get("FN_FLASK_SECRET_KEY", default=False)
+# app.secret_key = os.environ.get("FN_FLASK_SECRET_KEY", default=False)
+app.secret_key = gen_random_string(32)
 
 # db = SQL("")
 
@@ -123,24 +124,9 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/lessons')
-def lessons() :
-    return render_template('lessons.html')
-
-
 @app.route('/simulator')
 def simulator() :
     return render_template('simulator.html')
-
-
-@app.route('/buy')
-def buy() :
-    return render_template('buy.html')
-
-
-@app.route('/sell')
-def sell() :
-    return render_template('sell.html')
 
 
 @app.route('/history')
@@ -157,13 +143,30 @@ def logout() :
 @app.route('/login', methods=["GET", "POST"])
 def login() :
 
-    
+    if is_logged_in():
+        return redirect('/lessons')
+
+    if request.method == 'POST' :
+
+        email = request.form['email']
+        password = request.form['password']
+
+        if not db.execute("SELECT COUNT(1) FROM users WHERE email=:e", e=email) :
+            return render_template('login.html')
+
+        info = db.execute("SELECT uid, password FROM users WHERE email=:e", e=request.form['email'])[0]
+        if not check_password_hash(info['password'], password) :
+            return render_template('login.html')
+
+        this_user = User()
+        this_user.id = info['uid']
+        flask_login.login_user(this_user, remember=True)
+
+        return redirect('/lessons')
     
     return render_template('login.html')
 
 
-<<<<<<< HEAD
-=======
 @app.route('/lessons')
 def lessons() :
 
@@ -175,13 +178,6 @@ def lessons() :
     return render_template('lessons.html', progress=progress)
 
 
-@app.route('/simulator')
-def simulator() :
-
-    pass
-
-
->>>>>>> 3c47e26db014071ca1f403525675259a8f67ed7f
 @app.route('/buy', methods=['GET', 'POST'])
 def buy() :
 
@@ -257,7 +253,7 @@ def register() :
 
         # send email to user w/ token
         tokenstring = 'Your verification token is: ' + etoken
-        sendEmail(email, tokenstring, 'CalHacksApp Email Verification Token')
+        # sendEmail(email, tokenstring, 'CalHacksApp Email Verification Token')
 
         # keep user cached w/ flask-login
         this_user = User()
