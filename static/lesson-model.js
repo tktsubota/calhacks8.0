@@ -64,7 +64,7 @@ lessons.push(new Lesson("Welcome to Investing", "fa-chart-line", activities1))
 
 // Lesson 2
 activities2 = []
-activities1.push(new Activity("In this lesson, you will learn more about stocks."));
+activities2.push(new Activity("In this lesson, you will learn more about stocks."));
 activities2.push(new MultipleChoiceActivity(
     "When a company decides to go public, individuals purchase shares of the company for money.",
     "Why would a company want to give a part of their company away?",
@@ -75,10 +75,10 @@ activities2.push(new MultipleChoiceActivity(
     "Which of the following companies is in the NASDAQ stock exchange?",
     ["Adidas","Ford", "Amazon", "Virgin Galactic"],
     2));
-activities2.push(new GraphActivity(
-    "The price of a stock is determined by how much investors are willing to buy and sell the stock based on how valuable they believe the company is.",
-    "If a company recently had a 50% increase in total sales over the last month, which direction should its stock price go?",
-    1));
+// activities2.push(new GraphActivity(
+//     "The price of a stock is determined by how much investors are willing to buy and sell the stock based on how valuable they believe the company is.",
+//     "If a company recently had a 50% increase in total sales over the last month, which direction should its stock price go?",
+//     1));
 activities2.push(new MultipleChoiceActivity(
     "The graph of a stock price over time is one way of seeing the current value of a stock.",
     "The pandemic had a massive impact on many companies. Look up a graph of Amazon's 3 year stock price. How did Amazon do during the pandemic?",
