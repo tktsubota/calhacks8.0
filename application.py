@@ -186,20 +186,20 @@ def buy() :
 
         # takes symbol, quantity, type
 
-        # try :
+        try :
 
-        symbol = request.form['symbol']
-        quantity = request.form['quantity']
-        type = request.form['type']
-        info = lookup(symbol)
-        transaction = Transaction('buy', type, symbol, info['price'], quantity)
-        student = Student(getUserId())
-        student.perform_transaction(transaction)
+            symbol = request.form['symbol']
+            quantity = request.form['quantity']
+            type = int(request.form['type'])
+            info = lookup(symbol)
+            transaction = Transaction('buy', type, symbol, info['price'], quantity)
+            student = Student(getUserId())
+            student.perform_transaction(transaction)
 
-        return render_template('buy.html', dialog='You have successfully purchased ' + quantity + ' shares of ' + info['name'])
+            return render_template('buy.html', dialog='You have successfully purchased ' + quantity + ' shares of ' + info['name'])
 
-        # except Exception as e:
-        #     return render_template('buy.html', dialog=f'An error occurred when performing your transaction: {e}')
+        except Exception as e:
+            return render_template('buy.html', dialog=f'An error occurred when performing your transaction: {e}')
     
     return render_template('buy.html')
 
@@ -211,21 +211,20 @@ def sell() :
 
         # takes symbol, quantity, type
 
-        try :
+        #try :
 
-            symbol = request.form['symbol']
-            quantity = request.form['quantity']
-            type = request.form['type']
-            info = lookup(symbol)
-            transaction = Transaction('sell', type, symbol, info['price'], quantity)
-            student = Student(getUserId())
-            feedback = student.perform_transaction(transaction)
+        symbol = request.form['symbol']
+        quantity = request.form['quantity']
+        info = lookup(symbol)
+        transaction = Transaction('sell', 0, symbol, info['price'], int(quantity))
+        student = Student(getUserId())
+        student.perform_transaction(transaction)
 
-            return render_template('sell.html', dialog='You have successfully sold ' + quantity + ' shares of ' + info['name'])
+        return render_template('sell.html', dialog='You have successfully sold ' + quantity + ' shares of ' + info['name'])
 
-        except :
+        #except :
 
-            return render_template('sell.html', dialog='An error occurred when performing your transaction')
+        #    return render_template('sell.html', dialog='An error occurred when performing your transaction')
     
     return render_template('sell.html')
 
@@ -259,6 +258,8 @@ def register() :
         this_user = User()
         this_user.id = db.execute("SELECT uid FROM users WHERE email=:e", e=email)
         flask_login.login_user(this_user, remember=True)
+
+        return redirect('/lessons')
     
     return render_template('register.html')
 
