@@ -14,6 +14,7 @@ from flask_compress import Compress
 from flask_gzip import Gzip
 import flask_login
 from tempfile import mkdtemp
+from requests.api import get
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.datastructures import ImmutableMultiDict
@@ -33,6 +34,8 @@ from functools import wraps
 from helpers import apology, usd, gen_random_string, gen_random_token, sendEmail, lookup
 
 from cs50 import SQL
+
+import pyEX as p
 
 from datetime import datetime
 from datetime import timedelta
@@ -190,6 +193,16 @@ def lessons() :
     return render_template('lessons.html', progress=get_progress())
 
 
+@app.route('/lesson/<n>')
+def lessons(n) :
+
+    if not is_logged_in() :
+
+        return redirect('/login')
+
+    return render_template('lesson.html', progress=get_progress(), n=int(n))
+
+
 @app.route('/buy', methods=['GET', 'POST'])
 def buy() :
 
@@ -294,12 +307,16 @@ def profile() :
 @app.route('/search', methods=["GET", "POST"])
 def search() :
 
-    if request.method == "GET" :
-        pass
-    elif request.method == "POST" :
-        pass
+    if not is_logged_in() :
+        return redirect('/lessons')
 
-    return render_template('search.html')
+    if request.method == "POST" :
+        symbol = request.method['symbol']
+        client = p.Client(api_token='pk_54e28984093d4115931ec8b87b421ae2', version='stable')
+        info = client.quote(symbol)
+        return render_template('search.html', progress=get_progress(), info=info)
+
+    return render_template('search.html', progress=get_progress())
 
 
 def get_progress() :
