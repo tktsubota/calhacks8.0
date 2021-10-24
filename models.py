@@ -5,6 +5,10 @@ This provides the interface to the SQL database, allowing most app logic to be i
 """
 
 from enum import Enum
+from cs50 import SQL
+from helpers import lookup
+
+db = SQL("cockroachdb://adam:INszvx_c7RoH_dGI@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/slim-goat-4296.calhacks?sslmode=verify-full&sslrootcert=/Users/adam.manji/Library/CockroachCloud/certs/slim-goat-ca.crt")
 
 class Transaction:
     """A buy or sell transaction"""
@@ -66,4 +70,30 @@ class Student:
                 raise Exception(f'Not enough shares of {transaction.name} to sell.')
             
         transaction.student = self
+
         # ADD TRANSACTION TO SQL TABLE
+        db.execute("INSERT INTO transactions")
+
+    def get_user_evaluation() :
+
+        pass
+
+    def get_portfolio(self, type) :
+        out = {}
+        transactions = db.execute("SELECT * FROM transactions WHERE uid=:u", u=self.uuid)
+        for t in transactions :
+            val = 0
+            if t['symbol'] in out :
+                val = out['symbol']
+            if t['buy'] :
+                val += t['quantity']
+            else :
+                val -= t['quantity']
+            out['symbol'] = val
+        return out
+
+    def evaluate_portfolio(portfolio, type) :
+        value = 0
+        for e in portfolio :
+            value += portfolio[e] * lookup(e)['price']
+        return value
