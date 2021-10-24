@@ -91,7 +91,8 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=31)
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_REFRESH_EACH_REQUEST"] = False
 
-app.secret_key = os.environ.get("FN_FLASK_SECRET_KEY", default=False)
+# app.secret_key = os.environ.get("FN_FLASK_SECRET_KEY", default=False)
+app.secret_key = gen_random_string(16)
 
 # db = SQL("")
 
@@ -132,7 +133,14 @@ def logout() :
 @app.route('/login', methods=["GET", "POST"])
 def login() :
 
-    
+    if request.method == 'POST' :
+
+        # keep user cached w/ flask-login
+        this_user = User()
+        this_user.id = db.execute("SELECT uid FROM users WHERE email=:e", e=email)
+        flask_login.login_user(this_user, remember=True)
+
+        return redirect('/buy')
     
     return render_template('login.html')
 
