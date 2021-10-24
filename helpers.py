@@ -84,6 +84,7 @@ def sendEmail(address, message, subject) :
     s.quit()
 
 
+<<<<<<< HEAD
 def lookup(symbol, crypto=False):
     """Look up quote for symbol."""
 
@@ -95,6 +96,11 @@ def lookup(symbol, crypto=False):
     if crypto :
         symbol += 'USDT'
 
+=======
+def lookup(symbol):
+    """Look up quote for symbol."""
+
+>>>>>>> 4583870126764a715f117285a84283cac085fbe8
     # Contact API
     try:
         client = p.Client(api_token='pk_54e28984093d4115931ec8b87b421ae2', version='stable')
@@ -104,9 +110,14 @@ def lookup(symbol, crypto=False):
     # Parse response
     try:
         quote = client.quote(symbol)
+<<<<<<< HEAD
         if crypto:
             return {
                 "name": cryptoname(symbol_original),
+=======
+        if not "companyName" in quote :
+            return {
+>>>>>>> 4583870126764a715f117285a84283cac085fbe8
                 "price": float(quote["latestPrice"]),
                 "symbol": quote["symbol"]
             }
@@ -116,6 +127,7 @@ def lookup(symbol, crypto=False):
             "symbol": quote["symbol"]
         }
     except (KeyError, TypeError, ValueError):
+<<<<<<< HEAD
         return None
     
 def cryptoname(symbol):
@@ -123,3 +135,6 @@ def cryptoname(symbol):
     r = requests.get(url)
     data = r.json()
     return data['Meta Data']['3. Digital Currency Name']
+=======
+        return None
+>>>>>>> 4583870126764a715f117285a84283cac085fbe8

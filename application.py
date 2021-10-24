@@ -316,9 +316,13 @@ def register() :
         # add user to db
         uid = gen_random_string(6)
         passhash = generate_password_hash(password)
+<<<<<<< HEAD
         count_users = db.execute("SELECT COUNT(1) FROM users")[0]['count']
         db.execute("INSERT INTO users (pk, uid, email, password, token) VALUES (:c, :u, :e, :p, :t)", u=uid, e=email, p=passhash, t=etoken, c=count_users) # ADD OTHER VARIABLES TO THIS
         db.execute("COMMIT")
+=======
+        db.execute("INSERT INTO users (uid, email, password, token) VALUES (:u, :e, :p, :t)", u=uid, e=email, p=passhash, t=etoken) # ADD OTHER VARIABLES TO THIS
+>>>>>>> 4583870126764a715f117285a84283cac085fbe8
 
         # send email to user w/ token
         tokenstring = 'Your verification token is: ' + etoken
