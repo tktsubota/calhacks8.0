@@ -201,10 +201,7 @@ def setprogress() :
         activity = request.form['activity']
         progress = '{' + lesson + ',' + activity + '}'
         db.execute("UPDATE users SET progress=:p WHERE uid=:u", p=progress, u=getUserId())
-        try :
-            db.execute("COMMIT")
-        except :
-            pass
+        db.execute("COMMIT")
         return {'error': 'none'}
     except Exception as e :
         return {'error': 'there was an error'}

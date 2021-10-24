@@ -2,6 +2,7 @@ $(document).ready(function() {
     progressStr = $(".progress-span").attr("name").split(",");
     lessonsCompleted = Number(progressStr[0].substring(1));
     lessonProgress = Number(progressStr[1].substring(progressStr[1].length));
+    console.log(lessonsCompleted, lessonProgress);
 
     for (var i = 0; i < lessons.length; i++) {
         lesson = lessons[i]

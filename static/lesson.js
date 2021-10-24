@@ -1,7 +1,7 @@
 $(document).ready(function() {
     progressStr = $(".progress-span").attr("name").split(",");
     lessonsCompleted = Number(progressStr[0].substring(1));
-    lessonProgress = Number(progressStr[1].substring(progressStr[1].length));
+    lessonProgress = Number(progressStr[1].substring(progressStr[1].length-2, progressStr[1].length-1));
     currentLesson = lessons[lessonsCompleted];
     currentActivity = currentLesson.activities[lessonProgress];
 
