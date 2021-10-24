@@ -121,6 +121,26 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/lessons')
+def lessons() :
+    return render_template('lessons.html')
+
+
+@app.route('/simulator')
+def simulator() :
+    return render_template('simulator.html')
+
+
+@app.route('/buy')
+def buy() :
+    return render_template('buy.html')
+
+
+@app.route('/sell')
+def sell() :
+    return render_template('sell.html')
+
+
 @app.route("/logout")
 def logout() :
     flask_login.logout_user()
@@ -133,16 +153,6 @@ def login() :
     
     
     return render_template('login.html')
-
-
-@app.route('/lessons')
-def lessons() :
-    return render_template('lessons.html')
-
-
-@app.route('/simulator')
-def simulator() :
-    return render_template('simulator.html')
 
 
 @app.route('/register', methods=["GET", "POST"])
