@@ -28,6 +28,12 @@
     justify-content: center;
     align-items: center;
     display: flex;
+    text-decoration: none;
+    color: #222;
+}
+
+.lesson-circle:hover {
+    color: #222;
 }
 
 .lesson-circle .fas {
@@ -99,4 +105,35 @@
 
 .company {
     color: gray;
+}
+
+.card {
+    border-radius: 10%;
+    height: 70vh;
+    padding: 3em 1em 3em 1em;
+    box-shadow: 3px 3px 5px lightgray;
+}
+
+#card-holder {
+    margin-top: 2em;
+}
+
+.progress {
+    height: 1.5em;
+    margin-top: 1em;
+}
+
+.progress-bar {
+    color: #222;
+    font-weight: bold;
+}
+
+.multiple-choice-btn {
+    color: darkgray;
+    border-color: darkgray;
+    height: 7em;
+}
+
+.mult-choice-row {
+    margin-bottom: 1.5em;
 }

@@ -177,6 +177,15 @@ def lessons() :
     progress = db.execute("SELECT progress FROM users WHERE uid=:u", u=getUserId())[0]['progress']
     return render_template('lessons.html', progress=progress)
 
+@app.route('/lesson')
+def lesson() :
+
+    if not is_logged_in() :
+
+        return redirect('/login')
+
+    return render_template('lesson.html')
+
 
 @app.route('/buy', methods=['GET', 'POST'])
 def buy() :

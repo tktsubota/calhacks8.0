@@ -13,4 +13,11 @@ $(document).ready(function() {
             $("#nav-simulator").addClass("active")
         }
     }
+
+    // $(".lesson-circle").mousedown(function() {
+    //     $(this).css('box-shadow', '0px 0px 0px #000');
+    // })
+    // $(".lesson-circle").mouseup(function() {
+    //     $(this).css('box-shadow', '5px 5px 5px lightgray');
+    // })
 });
