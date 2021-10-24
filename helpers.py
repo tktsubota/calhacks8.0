@@ -87,6 +87,8 @@ def sendEmail(address, message, subject) :
 def lookup(symbol, crypto=False):
     """Look up quote for symbol."""
 
+    symbol_original = symbol
+
     if crypto :
         symbol += 'USDT'
 
@@ -101,7 +103,7 @@ def lookup(symbol, crypto=False):
         quote = client.quote(symbol)
         if crypto:
             return {
-                "name": cryptoname(symbol),
+                "name": cryptoname(symbol_original),
                 "price": float(quote["latestPrice"]),
                 "symbol": quote["symbol"]
             }
