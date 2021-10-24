@@ -84,8 +84,11 @@ def sendEmail(address, message, subject) :
     s.quit()
 
 
-def lookup(symbol):
+def lookup(symbol, crypto=False):
     """Look up quote for symbol."""
+
+    if crypto :
+        symbol += 'USDT'
 
     # Contact API
     try:
@@ -96,8 +99,9 @@ def lookup(symbol):
     # Parse response
     try:
         quote = client.quote(symbol)
-        if not "companyName" in quote :
+        if crypto:
             return {
+                "name": crpytoname(symbol),
                 "price": float(quote["latestPrice"]),
                 "symbol": quote["symbol"]
             }
@@ -108,3 +112,9 @@ def lookup(symbol):
         }
     except (KeyError, TypeError, ValueError):
         return None
+    
+def cryptoname(symbol):
+    url = 'https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_MONTHLY&symbol='+symbol+'&market=CNY&apikey=9XEDKZ2RWDICFDG6'
+    r = requests.get(url)
+    data = r.json()
+    return data['Meta Data']['3. Digital Currency Name']

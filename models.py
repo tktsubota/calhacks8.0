@@ -6,7 +6,8 @@ This provides the interface to the SQL database, allowing most app logic to be i
 
 from enum import Enum
 from cs50 import SQL
-from helpers import lookup
+from helpers import lookup, gen_random_string
+from datetime import datetime
 
 db = SQL("cockroachdb://adam:INszvx_c7RoH_dGI@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/slim-goat-4296.calhacks?sslmode=verify-full&sslrootcert=/Users/adam.manji/Library/CockroachCloud/certs/slim-goat-ca.crt")
 
@@ -26,7 +27,7 @@ class Transaction:
 
     def __init__(self, action, type, symbol, price, quantity):
         self.type = type
-        self.action = action
+        self.action = (action == 'buy')
         self.symbol = symbol
         self.price = price
         self.quantity = quantity
@@ -34,16 +35,22 @@ class Transaction:
 class Student:
     """A student, a user of the web app."""
     
-    def __init__(self):
-        self.uuid = 0
+    def __init__(self, uid):
+        self.uuid = uid
         self.current_lesson = 0
-        self.lesson_progress = 0 # Not sure what data format this should be
+        self.lesson_progress = 0
         self.cash = 0
 
-    def get_quantity(self, type, symbol):
+    def get_quantity(self, symbol):
         """Returns the quantity of a given SYMBOL of a given TYPE held by the student."""
-        # SQL implementation
-        return 10
+        out = 0
+        transactions = db.execute("SELECT quantity, buy FROM transactions WHERE uid=:u and symbol=:s", u=self.uuid, s=symbol)
+        for t in transactions :
+            if t['buy'] :
+                out += t['quantity']
+            else :
+                out -= t['quantity']
+        return out
 
     def get_value(self, type=None, symbol=None):
         """
@@ -51,8 +58,18 @@ class Student:
         If SYMBOL is None, return the total value held for that entire TYPE.
         IF TYPE is also None, return the total account value held overall by the student. This includes cash.
         """
-        # SQL implementation using Transactions table
-        return 100
+        if not symbol :
+
+            pass
+
+        elif not type :
+
+            pass
+
+        else :
+
+            return self.get_user_evaluation()
+
 
     def perform_transaction(self, transaction):
         """
@@ -61,7 +78,10 @@ class Student:
         Preconditions for buy: enough cash
         Preconditions for sell: student owns it
         """
-        if transaction.action is Transaction.Action.BUY:
+
+        self.cash = db.execute('SELECT cash FROM users WHERE uid=:u', u=self.uuid)[0]['cash']
+
+        if transaction.action : # buying
             if transaction.price * transaction.quantity > self.cash:
                 raise Exception(f'Not enough cash to buy {transaction.quantity} shares of {transaction.name} at ${transaction.price:.2f}.')
         else:
@@ -72,13 +92,28 @@ class Student:
         transaction.student = self
 
         # ADD TRANSACTION TO SQL TABLE
-        db.execute("INSERT INTO transactions")
+        count_transactions = db.execute("SELECT COUNT(1) FROM transactions")[0]['count']
+        uid = self.uuid
+        tid = gen_random_string(8)
+        ts = datetime.now().timestamp()
+        db.execute("INSERT INTO transactions (pk, tid, uid, symbol, price, quantity, buy, ts) VALUES (:c, :t, :u, :ty, :s, :p, :q, :a, to_timestamp(:time))", c=count_transactions, t=tid, u=uid, ty=transaction.type, s=transaction.symbol, p=transaction.price, q=transaction.quantity, a=transaction.action, time=ts)
 
-    def get_user_evaluation() :
+        # change student cash
 
-        pass
+        if transaction.action : # buying
+            self.cash = self.cash - transaction.price * transaction.quantity
+        else :
+            self.cash = self.cash + transaction.price * transaction.quantity
+        db.execute("UPDATE users SET cash=:c WHERE uid=:u", c=self.cash)
 
-    def get_portfolio(self, type) :
+
+    def get_user_evaluation(self) :
+
+        cash = db.execute('SELECT cash FROM users WHERE uid=:u', u=self.uuid)[0]['cash']
+        portfolio_val = Student.evaluate_portfolio(self.get_portfolio())
+        return cash + portfolio_val
+
+    def get_portfolio(self) :
         out = {}
         transactions = db.execute("SELECT * FROM transactions WHERE uid=:u", u=self.uuid)
         for t in transactions :
@@ -92,7 +127,7 @@ class Student:
             out['symbol'] = val
         return out
 
-    def evaluate_portfolio(portfolio, type) :
+    def evaluate_portfolio(portfolio) :
         value = 0
         for e in portfolio :
             value += portfolio[e] * lookup(e)['price']

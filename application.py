@@ -18,6 +18,8 @@ from werkzeug.exceptions import default_exceptions, HTTPException, InternalServe
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.datastructures import ImmutableMultiDict
 
+from models import Student, Transaction
+
 import smtplib
 from string import Template
 from email.mime.multipart import MIMEMultipart
@@ -28,7 +30,7 @@ import urllib.parse
 
 from functools import wraps
 
-from helpers import apology, usd, gen_random_string, gen_random_token, sendEmail
+from helpers import apology, usd, gen_random_string, gen_random_token, sendEmail, lookup
 
 from cs50 import SQL
 
@@ -147,6 +149,58 @@ def simulator() :
     pass
 
 
+@app.route('/buy', methods=['GET', 'POST'])
+def buy() :
+
+    if request.method == 'POST' :
+
+        # takes symbol, quantity, type
+
+        try :
+
+            symbol = request.form['symbol']
+            quantity = request.form['quantity']
+            type = request.form['type']
+            info = lookup(symbol)
+            transaction = Transaction('buy', type, symbol, info['price'], quantity)
+            student = Student(getUserId())
+            student.perform_transaction(transaction)
+
+            return render_template('sell.html', dialog='You have successfully purchased ' + quantity + ' shares of ' + info['name'])
+
+        except :
+
+            return render_template('sell.html', dialog='An error occurred when performing your transaction')
+    
+    return render_template('buy.html')
+
+
+@app.route('/sell', methods=['GET', 'POST'])
+def sell() :
+
+    if request.method == 'POST' :
+
+        # takes symbol, quantity, type
+
+        try :
+
+            symbol = request.form['symbol']
+            quantity = request.form['quantity']
+            type = request.form['type']
+            info = lookup(symbol)
+            transaction = Transaction('sell', type, symbol, info['price'], quantity)
+            student = Student(getUserId())
+            feedback = student.perform_transaction(transaction)
+
+            return render_template('sell.html', dialog='You have successfully sold ' + quantity + ' shares of ' + info['name'])
+
+        except :
+
+            return render_template('sell.html', dialog='An error occurred when performing your transaction')
+    
+    return render_template('sell.html')
+
+
 @app.route('/register', methods=["GET", "POST"])
 def register() :
 
@@ -164,7 +218,9 @@ def register() :
         # add user to db
         uid = gen_random_string(6)
         passhash = generate_password_hash(password)
-        db.execute("INSERT INTO users (uid, email, password, token) VALUES (:u, :e, :p, :t)", u=uid, e=email, p=passhash, t=etoken) # ADD OTHER VARIABLES TO THIS
+        count_users = db.execute("SELECT COUNT(1) FROM users")[0]['count']
+        db.execute("INSERT INTO users (pk, uid, email, password, token) VALUES (:c, :u, :e, :p, :t)", u=uid, e=email, p=passhash, t=etoken, c=count_users) # ADD OTHER VARIABLES TO THIS
+        db.execute("COMMIT")
 
         # send email to user w/ token
         tokenstring = 'Your verification token is: ' + etoken
