@@ -9,7 +9,7 @@ from cs50 import SQL
 from helpers import lookup, gen_random_string
 from datetime import datetime
 
-db = SQL("cockroachdb://adam:INszvx_c7RoH_dGI@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/slim-goat-4296.calhacks?sslmode=verify-full&sslrootcert=/Users/troy/Library/CockroachCloud/certs/slim-goat-ca.crt")
+db = SQL("cockroachdb://adam:INszvx_c7RoH_dGI@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/slim-goat-4296.calhacks?sslmode=verify-full&sslrootcert=/Users/adam.manji/Library/CockroachCloud/certs/slim-goat-ca.crt")
 
 class Transaction:
     """A buy or sell transaction"""
@@ -83,9 +83,9 @@ class Student:
 
         if transaction.action : # buying
             if transaction.price * float(transaction.quantity) > self.cash:
-                raise Exception(f'Not enough cash to buy {transaction.quantity} shares of {transaction.name} at ${transaction.price:.2f}.')
+                raise Exception(f'Not enough cash to buy {transaction.quantity} shares of {transaction.symbol} at ${transaction.price:.2f}.')
         else:
-            amount_to_sell = self.get_quantity(self, transaction.type, transaction.symbol)
+            amount_to_sell = self.get_quantity(transaction.symbol)
             if amount_to_sell < transaction.quantity:
                 raise Exception(f'Not enough shares of {transaction.name} to sell.')
             
@@ -95,8 +95,9 @@ class Student:
         count_transactions = db.execute("SELECT COUNT(1) FROM transactions")[0]['count']
         uid = self.uuid
         tid = gen_random_string(8)
-        ts = datetime.now().timestamp()
-        db.execute("INSERT INTO transactions (pk, tid, uid, symbol, price, quantity, buy, ts) VALUES (:c, :t, :u, :ty, :s, :p, :q, :a, to_timestamp(:time))", c=count_transactions, t=tid, u=uid, ty=transaction.type, s=transaction.symbol, p=transaction.price, q=transaction.quantity, a=transaction.action, time=ts)
+        ts = datetime.now()
+        db.execute("INSERT INTO transactions (pk, tid, uid, type, symbol, price, quantity, buy, ts) VALUES (:c, :t, :u, :ty, :s, :p, :q, :a, :time)", c=count_transactions, t=tid, u=uid, ty=transaction.type, s=transaction.symbol, p=transaction.price, q=transaction.quantity, a=transaction.action, time=ts)
+        db.execute("COMMIT")
 
         # change student cash
 
@@ -104,7 +105,7 @@ class Student:
             self.cash = self.cash - transaction.price * float(transaction.quantity)
         else :
             self.cash = self.cash + transaction.price * float(transaction.quantity)
-        db.execute("UPDATE users SET cash=:c WHERE uid=:u", c=self.cash)
+        db.execute("UPDATE users SET cash=:c WHERE uid=:u", c=self.cash, u=uid)
 
 
     def get_user_evaluation(self) :
