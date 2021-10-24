@@ -9,7 +9,7 @@
     <div class="row top-margin">
         <div class="col col-6">
             <h5 class="top-margin">Account Value</h5>
-            <h1 class="account-value">${{ "%.2f"|format(portfolio_value) }}</h1>
+            <h1 class="account-value">${{ "{:,.2f}".format(portfolio_value) }}</h1>
             <div class="row top-margin justify-content-center">
                 <div class='col col-auto'>
                     <button class="btn btn-lg dark-bg"><a class='button-link' href='/search'>Search</a></button>
@@ -36,7 +36,7 @@
             <h5 style="display:inline; margin-left: 1em;">Cash</h5>
         </div>
         <div class="col">
-            ${{ "%.2f"|format(cash) }} • {{ (cash * 100 / portfolio_value)|round|int }}% of portfolio
+            ${{ "{:,.2f}".format(cash) }} • {{ (cash * 100 / portfolio_value)|round|int }}% of portfolio
         </div>
     </div>
     <div class="row top-margin">
@@ -44,7 +44,7 @@
             <h5 style="display:inline; margin-left: 1em; margin-right: 0.5em;">Stocks</h5>
         </div>
         <div class="col">
-            ${{ "%.2f"|format(stock_value) }} • {{ (stock_value * 100 / portfolio_value)|round|int }}% of portfolio
+            ${{ "{:,.2f}".format(stock_value) }} • {{ (stock_value * 100 / portfolio_value)|round|int }}% of portfolio
         </div>
     </div>
     {% if stock_value > 0 %}
@@ -63,9 +63,9 @@
                     {% for item in portfolio if item.type == 0 %}
                     <tr>
                         <th scope="row">{{ item.symbol }} ({{ item.name }})</th>
-                        <td>${{ "%.2f"|format(item['price']) }}</td>
+                        <td>${{ "{:,.2f}".format(item['price']) }}</td>
                         <td>{{ item['quantity'] }}</td>
-                        <td>${{ "%.2f"|format(item['price'] * item['quantity']) }}</td>
+                        <td>${{ "{:,.2f}".format(item['price'] * item['quantity']) }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -79,7 +79,7 @@
             <h5 style="display:inline; margin-left: 1em; margin-right: 0.5em;">Funds</h5>
         </div>
         <div class="col">
-            ${{ "%.2f"|format(fund_value) }} • {{ (fund_value * 100 / portfolio_value)|round|int }}% of portfolio
+            ${{ "{:,.2f}".format(fund_value) }} • {{ (fund_value * 100 / portfolio_value)|round|int }}% of portfolio
         </div>
     </div>
     <div class="row top-margin">
@@ -97,9 +97,9 @@
                     {% for item in portfolio if item.type == 1 %}
                     <tr>
                         <th scope="row">{{ item.symbol }} ({{ item.name }})</th>
-                        <td>${{ "%.2f"|format(item['price']) }}</td>
+                        <td>${{ "{:,.2f}".format(item['price']) }}</td>
                         <td>{{ item['quantity'] }}</td>
-                        <td>${{ "%.2f"|format(item['price'] * item['quantity']) }}</td>
+                        <td>${{ "{:,.2f}".format(item['price'] * item['quantity']) }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -113,7 +113,7 @@
             <h5 style="display:inline; margin-left: 1em; margin-right: 0.5em;">Crypto</h5>
         </div>
         <div class="col">
-            ${{ "%.2f"|format(crypto_value) }} • {{ (crypto_value * 100 / portfolio_value)|round|int }}% of portfolio
+            ${{ "{:,.2f}".format(crypto_value) }} • {{ (crypto_value * 100 / portfolio_value)|round|int }}% of portfolio
         </div>
     </div>
     <div class="row top-margin">
@@ -131,9 +131,9 @@
                     {% for item in portfolio if item.type == 2 %}
                     <tr>
                         <th scope="row">{{ item.symbol }} ({{ item.name }})</th>
-                        <td>${{ "%.2f"|format(item['price']) }}</td>
+                        <td>${{ "{:,.2f}".format(item['price']) }}</td>
                         <td>{{ item['quantity'] }}</td>
-                        <td>${{ "%.2f"|format(item['price'] * item['quantity']) }}</td>
+                        <td>${{ "{:,.2f}".format(item['price'] * item['quantity']) }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

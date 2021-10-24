@@ -45,13 +45,13 @@
                         {% endif %}
                         
                         <td>{{ transaction['symbol'] }}</td>
-                        <td>${{ "%.2f"|format(transaction['price']) }}</td>
+                        <td>${{ "{:,.2f}".format(transaction['price']) }}</td>
                         <td>{{ transaction['quantity'] }}</td>
 
                         {% if transaction['buy'] == True %}
-                        <td>-${{ "%.2f"|format(transaction['price'] * transaction['quantity']) }}</td>
+                        <td>-${{ "{:,.2f}".format(transaction['price'] * transaction['quantity']) }}</td>
                         {% else %}
-                        <td>+${{ "%.2f"|format(transaction['price'] * transaction['quantity']) }}</td>
+                        <td>+${{ "{:,.2f}".format(transaction['price'] * transaction['quantity']) }}</td>
                         {% endif %}
                     </tr>
                     {% endfor %}
