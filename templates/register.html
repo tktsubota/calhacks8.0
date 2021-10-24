@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block main %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1 class="text-center top-margin">Register</h1>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <form action="/register" method="POST">
+                <div class="mb-3">
+                    <label for="register-email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" name="email" id="register-email" aria-describedby="emailHelp">
+                </div>
+                <div class="mb-3">
+                    <label for="register-password" class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" id="register-password">
+                </div>
+                <div class="mb-3">
+                    <label for="register-confirm-password" class="form-label">Confirm password</label>
+                    <input type="password" class="form-control" id="register-confirm-password">
+                </div>
+                <button type="submit" class="btn dark-bg">Register</button>
+            </form>
+            <p class="top-margin">Already have an account? Log in <a class="link" href="/login">here</a>.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

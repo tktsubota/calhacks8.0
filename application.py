@@ -92,7 +92,8 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_REFRESH_EACH_REQUEST"] = False
 
 # app.secret_key = os.environ.get("FN_FLASK_SECRET_KEY", default=False)
-app.secret_key = gen_random_string(16)
+
+app.secret_key = gen_random_string(32)
 
 # db = SQL("")
 
@@ -124,6 +125,16 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/simulator')
+def simulator() :
+    return render_template('simulator.html')
+
+
+@app.route('/history')
+def history() :
+    return render_template('history.html')
+
+
 @app.route("/logout")
 def logout() :
     flask_login.logout_user()
@@ -133,14 +144,26 @@ def logout() :
 @app.route('/login', methods=["GET", "POST"])
 def login() :
 
+    if is_logged_in():
+        return redirect('/lessons')
+
     if request.method == 'POST' :
 
-        # keep user cached w/ flask-login
+        email = request.form['email']
+        password = request.form['password']
+
+        if not db.execute("SELECT COUNT(1) FROM users WHERE email=:e", e=email) :
+            return render_template('login.html')
+
+        info = db.execute("SELECT uid, password FROM users WHERE email=:e", e=request.form['email'])[0]
+        if not check_password_hash(info['password'], password) :
+            return render_template('login.html')
+
         this_user = User()
-        this_user.id = db.execute("SELECT uid FROM users WHERE email=:e", e=email)
+        this_user.id = info['uid']
         flask_login.login_user(this_user, remember=True)
 
-        return redirect('/buy')
+        return redirect('/lessons')
     
     return render_template('login.html')
 
@@ -156,12 +179,6 @@ def lessons() :
     return render_template('lessons.html', progress=progress)
 
 
-@app.route('/simulator')
-def simulator() :
-
-    pass
-
-
 @app.route('/buy', methods=['GET', 'POST'])
 def buy() :
 
@@ -169,21 +186,20 @@ def buy() :
 
         # takes symbol, quantity, type
 
-        try :
+        # try :
 
-            symbol = request.form['symbol']
-            quantity = request.form['quantity']
-            type = request.form['type']
-            info = lookup(symbol)
-            transaction = Transaction('buy', type, symbol, info['price'], quantity)
-            student = Student(getUserId())
-            student.perform_transaction(transaction)
+        symbol = request.form['symbol']
+        quantity = request.form['quantity']
+        type = request.form['type']
+        info = lookup(symbol)
+        transaction = Transaction('buy', type, symbol, info['price'], quantity)
+        student = Student(getUserId())
+        student.perform_transaction(transaction)
 
-            return render_template('sell.html', dialog='You have successfully purchased ' + quantity + ' shares of ' + info['name'])
+        return render_template('buy.html', dialog='You have successfully purchased ' + quantity + ' shares of ' + info['name'])
 
-        except :
-
-            return render_template('sell.html', dialog='An error occurred when performing your transaction')
+        # except Exception as e:
+        #     return render_template('buy.html', dialog=f'An error occurred when performing your transaction: {e}')
     
     return render_template('buy.html')
 
@@ -237,7 +253,7 @@ def register() :
 
         # send email to user w/ token
         tokenstring = 'Your verification token is: ' + etoken
-        sendEmail(email, tokenstring, 'CalHacksApp Email Verification Token')
+        # sendEmail(email, tokenstring, 'CalHacksApp Email Verification Token')
 
         # keep user cached w/ flask-login
         this_user = User()
@@ -262,7 +278,7 @@ def search() :
     elif request.method == "POST" :
         pass
 
-    return 'put a search page here bro'
+    return render_template('search.html')
 
 
 
