@@ -164,7 +164,7 @@ def login() :
         # add user to db
         uid = gen_random_string(6)
         passhash = generate_password_hash(password)
-        db.execute("INSERT INTO users (uid) VALUES (:u)", u=uid) # ADD OTHER VARIABLES TO THIS
+        db.execute("INSERT INTO users (uid, email, password, token) VALUES (:u, :e, :p, :t)", u=uid, e=email, p=passhash, t=etoken) # ADD OTHER VARIABLES TO THIS
 
         # send email to user w/ token
         tokenstring = 'Your verification token is: ' + etoken
