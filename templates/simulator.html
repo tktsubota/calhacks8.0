@@ -5,5 +5,124 @@
 {% endblock %}
 
 {% block main %}
-
+<div class="container">
+    <div class="row top-margin">
+        <div class="col col-6">
+            <h5 class="top-margin">Account Value</h5>
+            <h1 class="account-value">$100,000.00</h1>
+            <div class="row top-margin justify-content-center">
+                <div class='col col-auto'>
+                    <button class="btn btn-lg dark-bg"><a class='button-link' href='/search'>Search</a></button>
+                </div>
+                <div class='col col-auto'>
+                    <button class="btn btn-lg dark-bg"><a class='button-link' href='/buy'>Buy</a></button>
+                </div>
+                <div class='col col-auto'>
+                    <button class="btn btn-lg dark-bg"><a class='button-link' href='/sell'>Sell</a></button>
+                </div>
+            </div>
+        </div>
+        <div class="col col-6">
+            <div class="graph"></div>
+            <a class="link" href="/analysis">See more portfolio analysis</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h3 style="display:inline; margin-right: 0.5em;">Current Holdings</h3><a class="link" href="/history">History</a>
+        </div>
+    </div>
+    <div class="row top-margin">
+        <div class="col-1">
+            <h5 style="display:inline; margin-left: 1em;">Cash</h5>
+        </div>
+        <div class="col">
+            $10,000 • 20% of portfolio
+        </div>
+    </div>
+    <div class="row top-margin">
+        <div class="col-1">
+            <h5 style="display:inline; margin-left: 1em; margin-right: 0.5em;">Stocks</h5>
+        </div>
+        <div class="col">
+            $15,000 • 40% of portfolio
+        </div>
+    </div>
+    <div class="row top-margin">
+        <div class="col col-11 offset-1">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Stock</th>
+                        <th scope="col">Current Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">AAPL (Apple Inc.)</th>
+                        <td>$137.42</td>
+                        <td>40</td>
+                        <td>$5,496.80</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">AAPL (Apple Inc.)</th>
+                        <td>$137.42</td>
+                        <td>40</td>
+                        <td>$5,496.80</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">AAPL (Apple Inc.)</th>
+                        <td>$137.42</td>
+                        <td>40</td>
+                        <td>$5,496.80</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row top-margin">
+        <div class="col-1">
+            <h5 style="display:inline; margin-left: 1em; margin-right: 0.5em;">Crypto</h5>
+        </div>
+        <div class="col">
+            $10,000 • 20% of portfolio
+        </div>
+    </div>
+    <div class="row top-margin">
+        <div class="col col-11 offset-1">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Cryptocurrency</th>
+                        <th scope="col">Current Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">ETH (Ethereum)</th>
+                        <td>$137.42</td>
+                        <td>40</td>
+                        <td>$5,496.80</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">ETH (Ethereum)</th>
+                        <td>$137.42</td>
+                        <td>40</td>
+                        <td>$5,496.80</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">ETH (Ethereum)</th>
+                        <td>$137.42</td>
+                        <td>40</td>
+                        <td>$5,496.80</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
