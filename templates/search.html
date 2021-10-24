@@ -31,18 +31,20 @@
         </div>
     </div>
     <hr/>
+    {% if info %}
+    
     <!-- Result -->
     <div class="row">
         <div class="col-6">
             <div class="row">
                 <div class="col-5">
                     <h5>Stock</h5>
-                    <h1 class="large-search-type">VFLKS</h1>
-                    <h6 class="company">Apple Inc.</h6>
+                    <h1 class="large-search-type">{{ info.symbol }}</h1>
+                    <h6 class="company">{{ info.companyName }}</h6>
                 </div>
                 <div class="col-7">
                     <h5>Current Price</h5>
-                    <h1 class="large-search-type">$1,142.80</h1>
+                    <h1 class="large-search-type">{{ info.latestPrice }}</h1>
                 </div>
             </div>
             <div class="row justify-content-center top-margin">
@@ -101,5 +103,7 @@
             </div>
         </div>
     </div>
+
+    {% endif %}
 </div>
 {% endblock %}

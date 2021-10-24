@@ -223,7 +223,7 @@ def lessons() :
 
 
 @app.route('/lesson/<n>')
-def lessons(n) :
+def lesson(n) :
 
     if not is_logged_in() :
 
