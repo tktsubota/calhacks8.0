@@ -6,6 +6,25 @@
 
 {% block main %}
 <div class="container">
-    
+    <div class="row top-margin">
+        <div class="col">
+            <h1 class="text-center">Sell</h1>
+        </div>
+    </div>
+    <div class="row top-margin justify-content-center">
+        <div class="col-6">
+            <form action="/sell" method="POST">
+                <div class="mb-3">
+                    <label for="sell-symbol" class="form-label">Symbol</label>
+                    <input type="text" class="form-control" name="symbol" id="sell-symbol">
+                </div>
+                <div class="mb-3">
+                    <label for="quantity-symbol" class="form-label">Quantity</label>
+                    <input type="number" class="form-control" id="sell-quantity">
+                </div>
+                <button type="submit" class="btn dark-bg">Sell</button>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}
