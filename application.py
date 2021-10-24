@@ -127,12 +127,24 @@ def index():
 
 @app.route('/simulator')
 def simulator() :
-    return render_template('simulator.html')
+
+    if not is_logged_in() :
+        return redirect('/login')
+
+    student = Student(getUserId())
+    portfolio = student.get_portfolio_with_prices()
+    return render_template('simulator.html', portfolio=portfolio, cash=student.cash, portfolio_value=student.evaluate_portfolio(student.get_portfolio()), progress=get_progress())
 
 
 @app.route('/history')
 def history() :
-    return render_template('history.html')
+
+    if not is_logged_in() :
+        return redirect('/login')
+
+    transactions = db.execute("SELECT * FROM transactions WHERE uid=:u", u=getUserId())
+
+    return render_template('history.html', transactions=transactions, progress=get_progress())
 
 
 @app.route("/logout")
@@ -175,8 +187,7 @@ def lessons() :
 
         return redirect('/login')
 
-    progress = db.execute("SELECT progress FROM users WHERE uid=:u", u=getUserId())[0]['progress']
-    return render_template('lessons.html', progress=progress)
+    return render_template('lessons.html', progress=get_progress())
 
 @app.route('/lesson')
 def lesson() :
@@ -191,6 +202,9 @@ def lesson() :
 @app.route('/buy', methods=['GET', 'POST'])
 def buy() :
 
+    if not is_logged_in() :
+        return redirect('/login')
+
     if request.method == 'POST' :
 
         # takes symbol, quantity, type
@@ -200,7 +214,10 @@ def buy() :
             symbol = request.form['symbol']
             quantity = request.form['quantity']
             type = int(request.form['type'])
-            info = lookup(symbol)
+            if type == 2 :
+                info = lookup(symbol, crypto=True)
+            else :
+                info = lookup(symbol)
             transaction = Transaction('buy', type, symbol, info['price'], quantity)
             student = Student(getUserId())
             student.perform_transaction(transaction)
@@ -208,13 +225,16 @@ def buy() :
             return render_template('buy.html', dialog='You have successfully purchased ' + quantity + ' shares of ' + info['name'])
 
         except Exception as e:
-            return render_template('buy.html', dialog=f'An error occurred when performing your transaction: {e}')
+            return render_template('buy.html', dialog=f'An error occurred when performing your transaction: {e}', progress=get_progress())
     
-    return render_template('buy.html')
+    return render_template('buy.html', progress=get_progress())
 
 
 @app.route('/sell', methods=['GET', 'POST'])
 def sell() :
+
+    if not is_logged_in() :
+        return redirect('/login')
 
     if request.method == 'POST' :
 
@@ -229,20 +249,20 @@ def sell() :
         student = Student(getUserId())
         student.perform_transaction(transaction)
 
-        return render_template('sell.html', dialog='You have successfully sold ' + quantity + ' shares of ' + info['name'])
+        return render_template('sell.html', dialog='You have successfully sold ' + quantity + ' shares of ' + info['name'], progress=get_progress())
 
         #except :
 
         #    return render_template('sell.html', dialog='An error occurred when performing your transaction')
     
-    return render_template('sell.html')
+    return render_template('sell.html', progress=get_progress())
 
 
 @app.route('/register', methods=["GET", "POST"])
 def register() :
 
     if is_logged_in() :
-        return redirect('/')
+        return redirect('/lessons')
 
     if request.method == 'POST' :
         # confirm submission form
@@ -290,6 +310,13 @@ def search() :
 
     return render_template('search.html')
 
+
+def get_progress() :
+
+    if not is_logged_in() :
+        return None
+    
+    return db.execute("SELECT progress FROM users WHERE uid=:u", u=getUserId())[0]["progress"]
 
 
 if __name__ == "__main__":
