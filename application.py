@@ -183,6 +183,17 @@ def login() :
     return render_template('login.html')
 
 
+@app.route('/setprogress', methods=['POST'])
+def setprogress() :
+    try :
+        lesson = request.method['lesson']
+        activity = request.method['activity']
+        progress = '{' + lesson + ', ' + activity + '}'
+        db.execute("UPDATE users SET progress=:p WHERE uid=:u", p=progress, u=getUserId())
+        return {'error': 'none'}
+    except Exception as e :
+        return {'error': e}
+
 @app.route('/lessons')
 def lessons() :
 
