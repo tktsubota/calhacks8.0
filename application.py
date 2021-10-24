@@ -190,6 +190,24 @@ def setprogress() :
         activity = request.method['activity']
         progress = '{' + lesson + ', ' + activity + '}'
         db.execute("UPDATE users SET progress=:p WHERE uid=:u", p=progress, u=getUserId())
+        try :
+            db.execute("COMMIT")
+        except :
+            pass
+        return {'error': 'none'}
+    except Exception as e :
+        return {'error': e}
+
+@app.route('/addcash')
+def addcash() :
+    try :
+        amount = int(request.form['amount'])
+        cash = db.execute("SELECT cash FROM users WHERE uid=:u", u=getUserId()) + amount
+        db.execute("UPDATE users SET cash=:c WHERE uid=:u", c=cash, u=getUserId())
+        try :
+            db.execute("COMMIT")
+        except :
+            pass
         return {'error': 'none'}
     except Exception as e :
         return {'error': e}
