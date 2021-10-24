@@ -5,56 +5,13 @@
 {% endblock %}
 
 {% block main %}
+<span class="progress-span" name="{{ progress }}"></span>
 <div class="container">
     <h1 class="text-center top-margin">Lessons</h1>
-    <!-- Replace with lessons data -->
-    <h3>Stocks</h3>
-    <div class="row">
-        <div class="col col-4 justify-content-center top-margin complete">
-            <a class="lesson-circle top-margin" href="/lesson">
-                <span class="fas fa-chart-line"></span>
-            </a>
-            <h4 class="lesson-title text-center top-margin">1. Stocks Intro</h4>
-            <p class="lesson-progress text-center">100% complete</p>
-        </div>
-        <div class="col col-4 justify-content-center top-margin complete">
-            <div class="lesson-circle top-margin">
-                <span class="fas fa-balance-scale-left"></span>
-            </div>
-            <h4 class="lesson-title text-center top-margin">2. Risk vs. Reward</h4>
-            <p class="lesson-progress text-center">100% complete</p>
-        </div>
-        <div class="col col-4 justify-content-center top-margin complete">
-            <div class="lesson-circle top-margin">
-                <span class="fas fa-money-bill-wave"></span>
-            </div>
-            <h4 class="lesson-title text-center top-margin">3. Short-Term Investments</h4>
-            <p class="lesson-progress text-center">100% complete</p>
-        </div>
-    </div>
-    <h3 class="top-margin">Cryptocurrency</h3>
-    <div class="row top-margin justify-content-center">
-        <div class="col col-4 top-margin partially-complete">
-            <a class="lesson-circle top-margin" href="/lesson">
-                <span class="fas fa-donate"></span>
-            </a>
-            <h4 class="lesson-title text-center top-margin">4. Cryptocurrency Intro</h4>
-            <p class="lesson-progress text-center">40% complete</p>
-        </div>
-        <div class="col col-4 top-margin not-started">
-            <div class="lesson-circle top-margin">
-                <span class="fas fa-book"></span>
-            </div>
-            <h4 class="lesson-title text-center top-margin">5. Blockchain</h4>
-            <p class="lesson-progress text-center">0% complete</p>
-        </div>
-        <div class="col col-4 top-margin not-started">
-            <div class="lesson-circle top-margin">
-                <span class="fas fa-coins"></span>
-            </div>
-            <h4 class="lesson-title text-center top-margin">6. Proof-of-Work</h4>
-            <p class="lesson-progress text-center">0% complete</p>
-        </div>
-    </div>
+    <div class="row" id="lesson-list"></div>
 </div>
+{% endblock %}
+
+{% block script %}
+<script src="/static/lessons.js"></script>
 {% endblock %}

@@ -231,25 +231,18 @@ def lessons() :
         return redirect('/login')
 
     return render_template('lessons.html', progress=get_progress())
+    
 
-@app.route('/lesson')
-def lesson() :
-
-    if not is_logged_in() :
-
-        return redirect('/login')
-
-    return render_template('lesson.html')
-
-
-@app.route('/lesson/<n>')
-def lessons(n) :
+# @app.route('/lesson/<n>')
+def lesson(n) :
 
     if not is_logged_in() :
 
         return redirect('/login')
 
     return render_template('lesson.html', progress=get_progress(), n=int(n))
+
+app.add_url_rule('/lesson/<n>', 'lesson', lesson)
 
 
 @app.route('/buy', methods=['GET', 'POST'])
