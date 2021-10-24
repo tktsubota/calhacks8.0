@@ -141,6 +141,11 @@ def sell() :
     return render_template('sell.html')
 
 
+@app.route('/history')
+def history() :
+    return render_template('history.html')
+
+
 @app.route("/logout")
 def logout() :
     flask_login.logout_user()
