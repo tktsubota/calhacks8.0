@@ -99,7 +99,7 @@ Compress(app)
 Gzip(app)
 Session(app)
 
-# db = SQL("cockroachdb://adam:INszvx_c7RoH_dGI@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/slim-goat-4296.calhacks?sslmode=verify-full&sslrootcert=/Users/adam.manji/Library/CockroachCloud/certs/slim-goat-ca.crt")
+db = SQL("cockroachdb://adam:INszvx_c7RoH_dGI@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/slim-goat-4296.calhacks?sslmode=verify-full&sslrootcert=/Users/troy/Library/CockroachCloud/certs/slim-goat-ca.crt")
 
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
@@ -172,7 +172,9 @@ def register() :
         # add user to db
         uid = gen_random_string(6)
         passhash = generate_password_hash(password)
-        db.execute("INSERT INTO users (uid) VALUES (:u)", u=uid) # ADD OTHER VARIABLES TO THIS
+        count_users = db.execute("SELECT COUNT(1) FROM users")[0]['count']
+        db.execute("INSERT INTO users (pk, uid, email, password, token) VALUES (:c, :u, :e, :p, :t)", u=uid, e=email, p=passhash, t=etoken, c=count_users) # ADD OTHER VARIABLES TO THIS
+        db.execute("COMMIT")
 
         # send email to user w/ token
         tokenstring = 'Your verification token is: ' + etoken
