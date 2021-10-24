@@ -92,3 +92,11 @@
 .link:hover {
     color: #00833a;
 }
+
+.large-search-type {
+    font-size: 4em;
+}
+
+.company {
+    color: gray;
+}
