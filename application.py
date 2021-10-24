@@ -197,9 +197,9 @@ def login() :
 @app.route('/setprogress', methods=['POST'])
 def setprogress() :
     try :
-        lesson = request.method['lesson']
-        activity = request.method['activity']
-        progress = '{' + lesson + ', ' + activity + '}'
+        lesson = request.form['lesson']
+        activity = request.form['activity']
+        progress = '{' + lesson + ',' + activity + '}'
         db.execute("UPDATE users SET progress=:p WHERE uid=:u", p=progress, u=getUserId())
         try :
             db.execute("COMMIT")
@@ -207,7 +207,7 @@ def setprogress() :
             pass
         return {'error': 'none'}
     except Exception as e :
-        return {'error': e}
+        return {'error': 'there was an error'}
 
 @app.route('/addcash')
 def addcash() :
@@ -233,7 +233,7 @@ def lessons() :
     return render_template('lessons.html', progress=get_progress())
     
 
-# @app.route('/lesson/<n>')
+@app.route('/lesson-<n>')
 def lesson(n) :
 
     if not is_logged_in() :
@@ -241,8 +241,6 @@ def lesson(n) :
         return redirect('/login')
 
     return render_template('lesson.html', progress=get_progress(), n=int(n))
-
-app.add_url_rule('/lesson/<n>', 'lesson', lesson)
 
 
 @app.route('/buy', methods=['GET', 'POST'])
