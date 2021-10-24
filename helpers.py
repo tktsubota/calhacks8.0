@@ -96,6 +96,11 @@ def lookup(symbol):
     # Parse response
     try:
         quote = client.quote(symbol)
+        if not "companyName" in quote :
+            return {
+                "price": float(quote["latestPrice"]),
+                "symbol": quote["symbol"]
+            }
         return {
             "name": quote["companyName"],
             "price": float(quote["latestPrice"]),

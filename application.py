@@ -91,6 +91,8 @@ app.config["SESSION_REFRESH_EACH_REQUEST"] = False
 
 app.secret_key = os.environ.get("FN_FLASK_SECRET_KEY", default=False)
 
+# db = SQL("")
+
 # " , logged_in = is_logged_in() "
 
 Compress(app)
@@ -128,26 +130,7 @@ def logout() :
 @app.route('/login', methods=["GET", "POST"])
 def login() :
 
-    if is_logged_in() :
-        return redirect('/lessons')
-
-    if request.method == 'POST' :
-
-        email = request.form['email']
-        password = request.form['password']
-
-        if not db.execute("SELECT COUNT(1) FROM users WHERE email=:e", e=email) :
-            return render_template('login.html')
-
-        info = db.execute("SELECT uid, password FROM users WHERE email=:e", e=request.form['email'])
-        if not check_password_hash(info['password'], password) :
-            return render_template('login.html')
-        
-        this_user = User()
-        this_user.id = info['uid']
-        flask_login.login_user(this_user, remember=True)
-
-        return redirect('/lessons')
+    
     
     return render_template('login.html')
 
@@ -165,10 +148,10 @@ def simulator() :
 
 
 @app.route('/register', methods=["GET", "POST"])
-def register() :
+def login() :
 
     if is_logged_in() :
-        return redirect('/lessons')
+        return redirect('/')
 
     if request.method == 'POST' :
         # confirm submission form
@@ -181,7 +164,7 @@ def register() :
         # add user to db
         uid = gen_random_string(6)
         passhash = generate_password_hash(password)
-        db.execute("INSERT INTO users (uid) VALUES (:u)", u=uid) # ADD OTHER VARIABLES TO THIS
+        db.execute("INSERT INTO users (uid, email, password, token) VALUES (:u, :e, :p, :t)", u=uid, e=email, p=passhash, t=etoken) # ADD OTHER VARIABLES TO THIS
 
         # send email to user w/ token
         tokenstring = 'Your verification token is: ' + etoken
