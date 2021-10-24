@@ -9,6 +9,7 @@
     <h1 class="text-center top-margin">Transaction History</h1>
     <div class="row top-margin justify-content-center">
         <div class="col col-10">
+            {% if transactions %}
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -21,48 +22,44 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for transaction in transactions %}
                     <tr>
-                        <td>2021-10-23 09:14:55 PM</td>
-                        <td>Buy Crypto</td>
-                        <td>AAPL</td>
-                        <td>$137.42</td>
-                        <td>40</td>
-                        <td>-$5,496.80</td>
-                    </tr>
-                    <tr>
-                        <td>2021-10-23 09:14:55 PM</td>
-                        <td>Buy Mutual Fund</td>
-                        <td>AAPL</td>
-                        <td>$137.42</td>
-                        <td>40</td>
-                        <td>-$5,496.80</td>
-                    </tr>
-                    <tr>
-                        <td>2021-10-23 09:14:55 PM</td>
-                        <td>Sell Stock</td>
-                        <td>AAPL</td>
-                        <td>$137.42</td>
-                        <td>40</td>
-                        <td>+$5,496.80</td>
-                    </tr>
-                    <tr>
-                        <td>2021-10-23 09:14:55 PM</td>
+                        <td>{{ transaction['ts'] }}</td>
+                        
+                        {% if transaction['buy'] == True %}
+                        {% if transaction['type'] == 0 %}
                         <td>Buy Stock</td>
-                        <td>AAPL</td>
-                        <td>$137.42</td>
-                        <td>40</td>
-                        <td>-$5,496.80</td>
+                        {% elif transaction['type'] == 1 %}
+                        <td>Buy Mutual Fund</td>
+                        {% else %}
+                        <td>Buy Crypto</td>
+                        {% endif %}
+                        {% else %}
+                        {% if transaction['type'] == 0 %}
+                        <td>Sell Stock</td>
+                        {% elif transaction['type'] == 1 %}
+                        <td>Sell Mutual Fund</td>
+                        {% else %}
+                        <td>Sell Crypto</td>
+                        {% endif %}
+                        {% endif %}
+                        
+                        <td>{{ transaction['symbol'] }}</td>
+                        <td>${{ "{:,.2f}".format(transaction['price']) }}</td>
+                        <td>{{ transaction['quantity'] }}</td>
+
+                        {% if transaction['buy'] == True %}
+                        <td>-${{ "{:,.2f}".format(transaction['price'] * transaction['quantity']) }}</td>
+                        {% else %}
+                        <td>+${{ "{:,.2f}".format(transaction['price'] * transaction['quantity']) }}</td>
+                        {% endif %}
                     </tr>
-                    <tr>
-                        <td>2021-10-23 09:14:55 PM</td>
-                        <td>Cash</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>+$100,000.00</td>
-                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <h3>No Transactions</h3>
+            {% endif %}
         </div>
     </div>
 </div>

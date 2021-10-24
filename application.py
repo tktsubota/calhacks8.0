@@ -14,6 +14,7 @@ from flask_compress import Compress
 from flask_gzip import Gzip
 import flask_login
 from tempfile import mkdtemp
+from requests.api import get
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.datastructures import ImmutableMultiDict
@@ -33,6 +34,8 @@ from functools import wraps
 from helpers import apology, usd, gen_random_string, gen_random_token, sendEmail, lookup
 
 from cs50 import SQL
+
+import pyEX as p
 
 from datetime import datetime
 from datetime import timedelta
@@ -92,6 +95,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_REFRESH_EACH_REQUEST"] = False
 
 # app.secret_key = os.environ.get("FN_FLASK_SECRET_KEY", default=False)
+
 app.secret_key = gen_random_string(32)
 
 # db = SQL("")
@@ -126,12 +130,35 @@ def index():
 
 @app.route('/simulator')
 def simulator() :
-    return render_template('simulator.html')
+
+    if not is_logged_in() :
+        return redirect('/login')
+
+    student = Student(getUserId())
+    portfolio = student.get_portfolio_with_prices()
+    stock = 0
+    fund = 0
+    crypto = 0
+    for item in portfolio:
+        amount = item['price'] * item['quantity']
+        if item['type'] == 0:
+            stock += amount
+        elif item['type'] == 1:
+            fund += amount
+        else:
+            crypto += amount
+    return render_template('simulator.html', portfolio=portfolio, cash=student.cash, portfolio_value=student.evaluate_portfolio(student.get_portfolio()), progress=get_progress(), stock_value=stock, fund_value=fund, crypto_value=crypto)
 
 
 @app.route('/history')
 def history() :
-    return render_template('history.html')
+
+    if not is_logged_in() :
+        return redirect('/login')
+
+    transactions = db.execute("SELECT * FROM transactions WHERE uid=:u", u=getUserId())
+
+    return render_template('history.html', transactions=transactions, progress=get_progress())
 
 
 @app.route("/logout")
@@ -167,6 +194,35 @@ def login() :
     return render_template('login.html')
 
 
+@app.route('/setprogress', methods=['POST'])
+def setprogress() :
+    try :
+        lesson = request.method['lesson']
+        activity = request.method['activity']
+        progress = '{' + lesson + ', ' + activity + '}'
+        db.execute("UPDATE users SET progress=:p WHERE uid=:u", p=progress, u=getUserId())
+        try :
+            db.execute("COMMIT")
+        except :
+            pass
+        return {'error': 'none'}
+    except Exception as e :
+        return {'error': e}
+
+@app.route('/addcash')
+def addcash() :
+    try :
+        amount = int(request.form['amount'])
+        cash = db.execute("SELECT cash FROM users WHERE uid=:u", u=getUserId()) + amount
+        db.execute("UPDATE users SET cash=:c WHERE uid=:u", c=cash, u=getUserId())
+        try :
+            db.execute("COMMIT")
+        except :
+            pass
+        return {'error': 'none'}
+    except Exception as e :
+        return {'error': e}
+
 @app.route('/lessons')
 def lessons() :
 
@@ -174,37 +230,26 @@ def lessons() :
 
         return redirect('/login')
 
-    progress = db.execute("SELECT progress FROM users WHERE uid=:u", u=getUserId())[0]['progress']
-    return render_template('lessons.html', progress=progress)
+    return render_template('lessons.html', progress=get_progress())
+    
+
+# @app.route('/lesson/<n>')
+def lesson(n) :
+
+    if not is_logged_in() :
+
+        return redirect('/login')
+
+    return render_template('lesson.html', progress=get_progress(), n=int(n))
+
+app.add_url_rule('/lesson/<n>', 'lesson', lesson)
 
 
 @app.route('/buy', methods=['GET', 'POST'])
 def buy() :
 
-    if request.method == 'POST' :
-
-        # takes symbol, quantity, type
-
-        # try :
-
-        symbol = request.form['symbol']
-        quantity = request.form['quantity']
-        type = request.form['type']
-        info = lookup(symbol)
-        transaction = Transaction('buy', type, symbol, info['price'], quantity)
-        student = Student(getUserId())
-        student.perform_transaction(transaction)
-
-        return render_template('buy.html', dialog='You have successfully purchased ' + quantity + ' shares of ' + info['name'])
-
-        # except Exception as e:
-        #     return render_template('buy.html', dialog=f'An error occurred when performing your transaction: {e}')
-    
-    return render_template('buy.html')
-
-
-@app.route('/sell', methods=['GET', 'POST'])
-def sell() :
+    if not is_logged_in() :
+        return redirect('/login')
 
     if request.method == 'POST' :
 
@@ -214,26 +259,56 @@ def sell() :
 
             symbol = request.form['symbol']
             quantity = request.form['quantity']
-            type = request.form['type']
-            info = lookup(symbol)
-            transaction = Transaction('sell', type, symbol, info['price'], quantity)
+            type = int(request.form['type'])
+            if type == 2 :
+                info = lookup(symbol, crypto=True)
+            else :
+                info = lookup(symbol)
+            transaction = Transaction('buy', type, symbol, info['price'], quantity)
             student = Student(getUserId())
-            feedback = student.perform_transaction(transaction)
+            student.perform_transaction(transaction)
 
-            return render_template('sell.html', dialog='You have successfully sold ' + quantity + ' shares of ' + info['name'])
+            return render_template('buy.html', dialog='You have successfully purchased ' + quantity + ' shares of ' + info['name'])
 
-        except :
-
-            return render_template('sell.html', dialog='An error occurred when performing your transaction')
+        except Exception as e:
+            return render_template('buy.html', dialog=f'An error occurred when performing your transaction: {e}', progress=get_progress())
     
-    return render_template('sell.html')
+    return render_template('buy.html', progress=get_progress())
+
+
+@app.route('/sell', methods=['GET', 'POST'])
+def sell() :
+
+    if not is_logged_in() :
+        return redirect('/login')
+
+    if request.method == 'POST' :
+
+        # takes symbol, quantity, type*
+
+        #try :
+
+        symbol = request.form['symbol']
+        quantity = request.form['quantity']
+        info = lookup(symbol)
+        transaction = Transaction('sell', 0, symbol, info['price'], int(quantity))
+        student = Student(getUserId())
+        student.perform_transaction(transaction)
+
+        return render_template('sell.html', dialog='You have successfully sold ' + quantity + ' shares of ' + info['name'], progress=get_progress())
+
+        #except :
+
+        #    return render_template('sell.html', dialog='An error occurred when performing your transaction')
+    
+    return render_template('sell.html', progress=get_progress())
 
 
 @app.route('/register', methods=["GET", "POST"])
 def register() :
 
     if is_logged_in() :
-        return redirect('/')
+        return redirect('/lessons')
 
     if request.method == 'POST' :
         # confirm submission form
@@ -258,6 +333,8 @@ def register() :
         this_user = User()
         this_user.id = db.execute("SELECT uid FROM users WHERE email=:e", e=email)
         flask_login.login_user(this_user, remember=True)
+
+        return redirect('/lessons')
     
     return render_template('register.html')
 
@@ -272,13 +349,24 @@ def profile() :
 @app.route('/search', methods=["GET", "POST"])
 def search() :
 
-    if request.method == "GET" :
-        pass
-    elif request.method == "POST" :
-        pass
+    if not is_logged_in() :
+        return redirect('/lessons')
 
-    return render_template('search.html')
+    if request.method == "POST" :
+        symbol = request.method['symbol']
+        client = p.Client(api_token='pk_54e28984093d4115931ec8b87b421ae2', version='stable')
+        info = client.quote(symbol)
+        return render_template('search.html', progress=get_progress(), info=info)
 
+    return render_template('search.html', progress=get_progress())
+
+
+def get_progress() :
+
+    if not is_logged_in() :
+        return None
+    
+    return db.execute("SELECT progress FROM users WHERE uid=:u", u=getUserId())[0]["progress"]
 
 
 if __name__ == "__main__":
