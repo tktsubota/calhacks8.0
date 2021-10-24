@@ -163,6 +163,7 @@ class Student:
             info = lookup(thing)
             real_out.append({
                 'name': info['name'],
+                'symbol': thing,
                 'quantity': quantity,
                 'price': info['price'],
                 'type': type

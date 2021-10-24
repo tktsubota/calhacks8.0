@@ -133,7 +133,18 @@ def simulator() :
 
     student = Student(getUserId())
     portfolio = student.get_portfolio_with_prices()
-    return render_template('simulator.html', portfolio=portfolio, cash=student.cash, portfolio_value=student.evaluate_portfolio(student.get_portfolio()), progress=get_progress())
+    stock = 0
+    fund = 0
+    crypto = 0
+    for item in portfolio:
+        amount = item['price'] * item['quantity']
+        if item['type'] == 0:
+            stock += amount
+        elif item['type'] == 1:
+            fund += amount
+        else:
+            crypto += amount
+    return render_template('simulator.html', portfolio=portfolio, cash=student.cash, portfolio_value=student.evaluate_portfolio(student.get_portfolio()), progress=get_progress(), stock_value=stock, fund_value=fund, crypto_value=crypto)
 
 
 @app.route('/history')
