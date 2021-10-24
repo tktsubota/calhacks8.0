@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+<div class="container">
+    <h1 class="text-center top-margin">Transaction History</h1>
+    <div class="row top-margin justify-content-center">
+        <div class="col col-10">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Timestamp</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Symbol</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2021-10-23 09:14:55 PM</td>
+                        <td>Buy Crypto</td>
+                        <td>AAPL</td>
+                        <td>$137.42</td>
+                        <td>40</td>
+                        <td>-$5,496.80</td>
+                    </tr>
+                    <tr>
+                        <td>2021-10-23 09:14:55 PM</td>
+                        <td>Buy Mutual Fund</td>
+                        <td>AAPL</td>
+                        <td>$137.42</td>
+                        <td>40</td>
+                        <td>-$5,496.80</td>
+                    </tr>
+                    <tr>
+                        <td>2021-10-23 09:14:55 PM</td>
+                        <td>Sell Stock</td>
+                        <td>AAPL</td>
+                        <td>$137.42</td>
+                        <td>40</td>
+                        <td>+$5,496.80</td>
+                    </tr>
+                    <tr>
+                        <td>2021-10-23 09:14:55 PM</td>
+                        <td>Buy Stock</td>
+                        <td>AAPL</td>
+                        <td>$137.42</td>
+                        <td>40</td>
+                        <td>-$5,496.80</td>
+                    </tr>
+                    <tr>
+                        <td>2021-10-23 09:14:55 PM</td>
+                        <td>Cash</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>+$100,000.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

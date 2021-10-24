@@ -18,6 +18,8 @@ from werkzeug.exceptions import default_exceptions, HTTPException, InternalServe
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.datastructures import ImmutableMultiDict
 
+from models import Student, Transaction
+
 import smtplib
 from string import Template
 from email.mime.multipart import MIMEMultipart
@@ -28,7 +30,7 @@ import urllib.parse
 
 from functools import wraps
 
-from helpers import apology, usd, gen_random_string, gen_random_token, sendEmail
+from helpers import apology, usd, gen_random_string, gen_random_token, sendEmail, lookup
 
 from cs50 import SQL
 
@@ -89,7 +91,10 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=31)
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_REFRESH_EACH_REQUEST"] = False
 
-app.secret_key = os.environ.get("FN_FLASK_SECRET_KEY", default=False)
+# app.secret_key = os.environ.get("FN_FLASK_SECRET_KEY", default=False)
+app.secret_key = gen_random_string(32)
+
+# db = SQL("")
 
 # " , logged_in = is_logged_in() "
 
@@ -97,7 +102,7 @@ Compress(app)
 Gzip(app)
 Session(app)
 
-# db = SQL("cockroachdb://adam:INszvx_c7RoH_dGI@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/slim-goat-4296.calhacks?sslmode=verify-full&sslrootcert=/Users/adam.manji/Library/CockroachCloud/certs/slim-goat-ca.crt")
+db = SQL("cockroachdb://adam:INszvx_c7RoH_dGI@free-tier.gcp-us-central1.cockroachlabs.cloud:26257/slim-goat-4296.calhacks?sslmode=verify-full&sslrootcert=/Users/troy/Library/CockroachCloud/certs/slim-goat-ca.crt")
 
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
@@ -119,6 +124,16 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/simulator')
+def simulator() :
+    return render_template('simulator.html')
+
+
+@app.route('/history')
+def history() :
+    return render_template('history.html')
+
+
 @app.route("/logout")
 def logout() :
     flask_login.logout_user()
@@ -128,7 +143,7 @@ def logout() :
 @app.route('/login', methods=["GET", "POST"])
 def login() :
 
-    if is_logged_in() :
+    if is_logged_in():
         return redirect('/lessons')
 
     if request.method == 'POST' :
@@ -139,10 +154,10 @@ def login() :
         if not db.execute("SELECT COUNT(1) FROM users WHERE email=:e", e=email) :
             return render_template('login.html')
 
-        info = db.execute("SELECT uid, password FROM users WHERE email=:e", e=request.form['email'])
+        info = db.execute("SELECT uid, password FROM users WHERE email=:e", e=request.form['email'])[0]
         if not check_password_hash(info['password'], password) :
             return render_template('login.html')
-        
+
         this_user = User()
         this_user.id = info['uid']
         flask_login.login_user(this_user, remember=True)
@@ -155,20 +170,70 @@ def login() :
 @app.route('/lessons')
 def lessons() :
 
-    pass
+    if not is_logged_in() :
+
+        return redirect('/login')
+
+    progress = db.execute("SELECT progress FROM users WHERE uid=:u", u=getUserId())[0]['progress']
+    return render_template('lessons.html', progress=progress)
 
 
-@app.route('/simulator')
-def simulator() :
+@app.route('/buy', methods=['GET', 'POST'])
+def buy() :
 
-    pass
+    if request.method == 'POST' :
+
+        # takes symbol, quantity, type
+
+        # try :
+
+        symbol = request.form['symbol']
+        quantity = request.form['quantity']
+        type = request.form['type']
+        info = lookup(symbol)
+        transaction = Transaction('buy', type, symbol, info['price'], quantity)
+        student = Student(getUserId())
+        student.perform_transaction(transaction)
+
+        return render_template('buy.html', dialog='You have successfully purchased ' + quantity + ' shares of ' + info['name'])
+
+        # except Exception as e:
+        #     return render_template('buy.html', dialog=f'An error occurred when performing your transaction: {e}')
+    
+    return render_template('buy.html')
+
+
+@app.route('/sell', methods=['GET', 'POST'])
+def sell() :
+
+    if request.method == 'POST' :
+
+        # takes symbol, quantity, type
+
+        try :
+
+            symbol = request.form['symbol']
+            quantity = request.form['quantity']
+            type = request.form['type']
+            info = lookup(symbol)
+            transaction = Transaction('sell', type, symbol, info['price'], quantity)
+            student = Student(getUserId())
+            feedback = student.perform_transaction(transaction)
+
+            return render_template('sell.html', dialog='You have successfully sold ' + quantity + ' shares of ' + info['name'])
+
+        except :
+
+            return render_template('sell.html', dialog='An error occurred when performing your transaction')
+    
+    return render_template('sell.html')
 
 
 @app.route('/register', methods=["GET", "POST"])
 def register() :
 
     if is_logged_in() :
-        return redirect('/lessons')
+        return redirect('/')
 
     if request.method == 'POST' :
         # confirm submission form
@@ -181,11 +246,13 @@ def register() :
         # add user to db
         uid = gen_random_string(6)
         passhash = generate_password_hash(password)
-        db.execute("INSERT INTO users (uid) VALUES (:u)", u=uid) # ADD OTHER VARIABLES TO THIS
+        count_users = db.execute("SELECT COUNT(1) FROM users")[0]['count']
+        db.execute("INSERT INTO users (pk, uid, email, password, token) VALUES (:c, :u, :e, :p, :t)", u=uid, e=email, p=passhash, t=etoken, c=count_users) # ADD OTHER VARIABLES TO THIS
+        db.execute("COMMIT")
 
         # send email to user w/ token
         tokenstring = 'Your verification token is: ' + etoken
-        sendEmail(email, tokenstring, 'CalHacksApp Email Verification Token')
+        # sendEmail(email, tokenstring, 'CalHacksApp Email Verification Token')
 
         # keep user cached w/ flask-login
         this_user = User()
@@ -210,7 +277,7 @@ def search() :
     elif request.method == "POST" :
         pass
 
-    return 'put a search page here bro'
+    return render_template('search.html')
 
 
 
