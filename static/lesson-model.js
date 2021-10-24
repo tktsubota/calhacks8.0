@@ -59,7 +59,7 @@ activities1.push(new MultipleChoiceActivity(
     "Experts warn not to move all your savings into investments. ",
     "What is one reason you think this is recommended?",
     ["Impossible to earn money from investments", "Need savings for expensive emergencies", "Investments cannot be used after retirement", "Not allowed to invest money without keeping money in savings"],
-    2));
+    1));
 lessons.push(new Lesson("Welcome to Investing", "fa-chart-line", activities1))
 
 // Lesson 2
@@ -69,12 +69,12 @@ activities2.push(new MultipleChoiceActivity(
     "When a company decides to go public, individuals purchase shares of the company for money.",
     "Why would a company want to give a part of their company away?",
     ["Raise money to expand the company", "Raise awareness of their company", "Required by the US Government", "Raise money for charity"],
-    1));
+    0));
 activities2.push(new MultipleChoiceActivity(
     "A company can decide to join a stock exchange to make it easier for individuals to purchase their stock. Some examples are NASDAQ(for tech companies) and NYSE(largest stock exchange).",
     "Which of the following companies is in the NASDAQ stock exchange?",
     ["Adidas","Ford", "Amazon", "Virgin Galactic"],
-    2));
+    1));
 // activities2.push(new GraphActivity(
 //     "The price of a stock is determined by how much investors are willing to buy and sell the stock based on how valuable they believe the company is.",
 //     "If a company recently had a 50% increase in total sales over the last month, which direction should its stock price go?",
@@ -83,7 +83,7 @@ activities2.push(new MultipleChoiceActivity(
     "The graph of a stock price over time is one way of seeing the current value of a stock.",
     "The pandemic had a massive impact on many companies. Look up a graph of Amazon's 3 year stock price. How did Amazon do during the pandemic?",
     ["Become extremely valuable", "Become slightly more valuable", "Become slightly less valuable", "Become worthless"],
-    1));
+    0));
 lessons.push(new Lesson("Introduction to Stocks", "fa-chart-line",activities2));
 
 //Lesson 3
@@ -179,11 +179,11 @@ function nextActivity() {
     currentLesson = lessons[lessonsCompleted];
     currentActivity = currentLesson.activities[lessonProgress];
 
-    if (lessonProgress == currentLesson.activities.length) {
+    if (lessonProgress + 1 == currentLesson.activities.length) {
         // Complete lesson, give cash, unlock features, and exit out
-        $.post("/setprogress", {'lesson':2, 'activity': 1}, function(result, status, jqXHR) {
-            percent = Math.round(Number((lessonProgress + 1) * 100 / currentLesson.activities.length));
-            percentStr = `${ percent }%`;
+        $.post("/setprogress", {'lesson':lessonsCompleted + 1, 'activity': 0}, function(result, status, jqXHR) {
+            $(".progress-span").attr("name", `[${ lessonsCompleted + 1 }, ${ 0 }]`);
+            percentStr = `${ 100 }%`;
             $("#progress").animate({
                 width: percentStr
             }, 500, function() {
@@ -193,9 +193,13 @@ function nextActivity() {
             $.post("/addcash", {'amount': 10000}, function(result, status, jqXHR) {
                 alert(result['error']);
             });
+
+            setTimeout(function() {
+                $(location).attr("href", "/lessons");
+            }, 1000);
         });
     } else {
-        $.post("/setprogress", {'lesson':0, 'activity':1}, function(result, status, jqXHR) {
+        $.post("/setprogress", {'lesson':lessonsCompleted, 'activity':lessonProgress + 1}, function(result, status, jqXHR) {
             $(".progress-span").attr("name", `[${ lessonsCompleted }, ${ lessonProgress + 1 }]`);
             
             newHTML = htmlForActivity(currentLesson.activities[lessonProgress + 1], lessonProgress + 1, currentLesson, lessonsCompleted);
