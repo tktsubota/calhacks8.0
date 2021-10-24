@@ -185,21 +185,20 @@ def buy() :
 
         # takes symbol, quantity, type
 
-        try :
+        # try :
 
-            symbol = request.form['symbol']
-            quantity = request.form['quantity']
-            type = request.form['type']
-            info = lookup(symbol)
-            transaction = Transaction('buy', type, symbol, info['price'], quantity)
-            student = Student(getUserId())
-            student.perform_transaction(transaction)
+        symbol = request.form['symbol']
+        quantity = request.form['quantity']
+        type = request.form['type']
+        info = lookup(symbol)
+        transaction = Transaction('buy', type, symbol, info['price'], quantity)
+        student = Student(getUserId())
+        student.perform_transaction(transaction)
 
-            return render_template('sell.html', dialog='You have successfully purchased ' + quantity + ' shares of ' + info['name'])
+        return render_template('buy.html', dialog='You have successfully purchased ' + quantity + ' shares of ' + info['name'])
 
-        except :
-
-            return render_template('sell.html', dialog='An error occurred when performing your transaction')
+        # except Exception as e:
+        #     return render_template('buy.html', dialog=f'An error occurred when performing your transaction: {e}')
     
     return render_template('buy.html')
 

@@ -82,7 +82,7 @@ class Student:
         self.cash = db.execute('SELECT cash FROM users WHERE uid=:u', u=self.uuid)[0]['cash']
 
         if transaction.action : # buying
-            if transaction.price * transaction.quantity > self.cash:
+            if transaction.price * float(transaction.quantity) > self.cash:
                 raise Exception(f'Not enough cash to buy {transaction.quantity} shares of {transaction.name} at ${transaction.price:.2f}.')
         else:
             amount_to_sell = self.get_quantity(self, transaction.type, transaction.symbol)
@@ -101,9 +101,9 @@ class Student:
         # change student cash
 
         if transaction.action : # buying
-            self.cash = self.cash - transaction.price * transaction.quantity
+            self.cash = self.cash - transaction.price * float(transaction.quantity)
         else :
-            self.cash = self.cash + transaction.price * transaction.quantity
+            self.cash = self.cash + transaction.price * float(transaction.quantity)
         db.execute("UPDATE users SET cash=:c WHERE uid=:u", c=self.cash)
 
 

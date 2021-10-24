@@ -11,20 +11,23 @@
             <h1 class="text-center">Buy</h1>
         </div>
     </div>
+    {% if dialog %}
+        {{ dialog }}
+    {% endif %}
     <div class="row top-margin justify-content-center">
         <div class="col-6">
             <form action="/buy" method="POST">
                 <div class="mb-3">
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="stock" checked>
+                        <input class="form-check-input" type="radio" name="type" id="inlineRadio1" value=0 checked>
                         <label class="form-check-label" for="inlineRadio1">Stock</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="mutual-fund">
+                        <input class="form-check-input" type="radio" name="type" id="inlineRadio2" value=1>
                         <label class="form-check-label" for="inlineRadio2">Mutual Fund</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="cryptocurrency" disabled>
+                        <input class="form-check-input" type="radio" name="type" id="inlineRadio3" value=2 disabled>
                         <label class="form-check-label" for="inlineRadio3">Cryptocurrency</label>
                     </div>
                 </div>
@@ -34,7 +37,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="quantity-symbol" class="form-label">Quantity</label>
-                    <input type="number" class="form-control" id="buy-quantity">
+                    <input type="number" class="form-control" name="quantity" id="buy-quantity">
                 </div>
                 <button type="submit" class="btn dark-bg">Buy</button>
             </form>
