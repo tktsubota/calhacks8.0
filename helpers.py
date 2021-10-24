@@ -87,6 +87,9 @@ def sendEmail(address, message, subject) :
 def lookup(symbol, crypto=False):
     """Look up quote for symbol."""
 
+    if symbol.endswith('USDT') :
+        symbol = symbol[0:len(symbol)-4]
+
     symbol_original = symbol
 
     if crypto :

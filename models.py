@@ -160,7 +160,10 @@ class Student:
             quantity = out[thing]
             type = int(thing[-1])
             thing = thing[0:len(thing)-1]
-            info = lookup(thing)
+            if type == 2 :
+                info = lookup(thing, crypto=True)
+            else :
+                info = lookup(thing)
             real_out.append({
                 'name': info['name'],
                 'quantity': quantity,
